@@ -384,8 +384,8 @@ class CardMeasurement(object):
         whiteFrame = 255 * np.ones(seg_img.shape, np.uint8)
         whiteFrame = cv2.drawContours(whiteFrame, cnts, -1, (0, 0, 0), 3)
         
-        # Adjust the gap of the outer line to prevent from being re-detected
-        print('Adjust the gap of the outer line to prevent from being re-detected')
+        # Apply the gap of the outer line to prevent from being re-detected
+        print('Apply the gap of the outer line to prevent from being re-detected')
         gap = 10
         whiteFrame = whiteFrame[gap:-gap, gap:-gap]
     
@@ -415,7 +415,7 @@ class CardMeasurement(object):
     def plot_detection(self, image, potrait_status, outer_top_line, outer_bottom_line, outer_right_line, outer_left_line, inter_top_line, inner_bottom_line, inner_right_line, inner_left_line, filename=''):
          
         whiteFrame = image.copy() # 255 * np.ones(image.shape, np.uint8) 
-        text_color = (0, 253, 0)
+        text_color = (208, 67, 35)
         font_size = 2
         
         # Plot green lines on top

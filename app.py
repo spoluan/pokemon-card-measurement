@@ -479,7 +479,7 @@ class CardMeasurement(object):
             
     def is_to_stop(self, path, file):
         status = ''
-        with open('D:\\Card-edge-measurement-release\\results/running_status.txt', 'r') as w:  
+        with open(os.path.join(path, file), 'r') as w:  
             status = w.read().strip()
         if status == 'FORCE STOP':
             return True

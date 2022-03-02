@@ -473,23 +473,32 @@ class CardMeasurement(object):
                 if len(a.strip()) > 0:
                     w.write(a) 
                 
-    def update_finish_status(self, path, status):
-        with open(os.path.join(path, 'running_status.txt'), 'w') as w:  
+    def update_information(self, path, file, status):
+        with open(os.path.join(path, file), 'w') as w:  
             w.write(f'{status}')
-
+            
+    def is_to_stop(self, path, file):
+        status = ''
+        with open('D:\\Card-edge-measurement-release\\results/running_status.txt', 'r') as w:  
+            status = w.read().strip()
+        if status == 'FORCE STOP':
+            return True
+        else:
+            return False
+             
 if __name__ == '__main__':
     
     # Specify the path to save
     addr = './backside' 
     addr_to_save = './outputs'
     results_path = './results' 
-    img_paths = os.listdir(addr)[:]
+    img_paths = os.listdir(addr)[:5]
     
     # Create an instance of the class to use
     app = CardMeasurement()  
     
     # Maintain the running status 
-    app.update_finish_status(results_path, 'RUNNING')
+    app.update_information(results_path, 'running_status.txt', 'RUNNING')
     
     # Clear the results file for the first run
     app.write_results([], results_path, skipped=False)
@@ -497,21 +506,29 @@ if __name__ == '__main__':
     
     for count, img_path in enumerate(img_paths):  
         
-        print(f'#### Processing image {img_path} {count} from {len(img_paths)}')
+        # Check if need to stop forcely
+        if not app.is_to_stop(results_path, 'running_status.txt'):
+            
+            # Maintain the running status 
+            print(f'#### Processing image {img_path} {count} from {len(img_paths)}') 
+            app.update_information(results_path, 'current_process.txt', f'{img_path} > {count} from {len(img_paths)}')
+            
+            # Load the image,  
+            image = cv2.imread(os.path.join(addr, img_path), 0)
+            
+            shadow = False
+            try:
+                image, potrait_status, outer_top_line, outer_bottom_line, outer_right_line, outer_left_line, inter_top_line, inner_bottom_line, inner_right_line, inner_left_line = app.image_segmentation(image, shadow=shadow)
+                top_dis, bottom_dis, right_dis, left_dis = app.plot_detection(image, potrait_status, outer_top_line, outer_bottom_line, outer_right_line, outer_left_line, inter_top_line, inner_bottom_line, inner_right_line, inner_left_line, filename=os.path.join(addr_to_save, img_path), save_image=True)
+                app.write_results([img_path, top_dis, bottom_dis, right_dis, left_dis], results_path, write_status='a+')
+            except:
+                app.write_results([img_path], results_path, skipped=True, write_status='a+')
+                print(f'Imature detection of some border: image {img_path} is being skipped')
+            
+            print('Done\n\n')
         
-        # Load the image,  
-        image = cv2.imread(os.path.join(addr, img_path), 0)
-        
-        shadow = False
-        try:
-            image, potrait_status, outer_top_line, outer_bottom_line, outer_right_line, outer_left_line, inter_top_line, inner_bottom_line, inner_right_line, inner_left_line = app.image_segmentation(image, shadow=shadow)
-            top_dis, bottom_dis, right_dis, left_dis = app.plot_detection(image, potrait_status, outer_top_line, outer_bottom_line, outer_right_line, outer_left_line, inter_top_line, inner_bottom_line, inner_right_line, inner_left_line, filename=os.path.join(addr_to_save, img_path), save_image=True)
-            app.write_results([img_path, top_dis, bottom_dis, right_dis, left_dis], results_path, write_status='a+')
-        except:
-            app.write_results([img_path], results_path, skipped=True, write_status='a+')
-            print(f'Imature detection of some border: image {img_path} is being skipped')
-        
-        print('Done\n\n') 
+        else:
+            print('Force closed')
         
     # Maintain the running status 
-    app.update_finish_status(results_path, 'STOP')
+    app.update_information(results_path, 'running_status.txt', 'STOP')

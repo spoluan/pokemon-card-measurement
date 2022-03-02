@@ -412,18 +412,20 @@ class CardMeasurement(object):
          
         return image, potrait_status, outer_top_line, outer_bottom_line, outer_right_line, outer_left_line, inter_top_line, inner_bottom_line, inner_right_line, inner_left_line
     
-    def plot_detection(self, image, potrait_status, outer_top_line, outer_bottom_line, outer_right_line, outer_left_line, inter_top_line, inner_bottom_line, inner_right_line, inner_left_line, filename=''):
+    def plot_detection(self, image, potrait_status, outer_top_line, outer_bottom_line, outer_right_line, outer_left_line, inter_top_line, inner_bottom_line, inner_right_line, inner_left_line, filename='', save_image=True):
          
         whiteFrame = image.copy() # 255 * np.ones(image.shape, np.uint8) 
         text_color = (208, 67, 35)
         font_size = 2
+        
+        top_dis, bottom_dis, right_dis, left_dis = 0, 0, 0, 0
         
         # Plot green lines on top
         whiteFrame = cv2.line(whiteFrame, (int(outer_top_line[0]), int(outer_top_line[1])), (int(inter_top_line[0]), int(inter_top_line[1])), (0, 253, 0), 5)
         whiteFrame = cv2.line(whiteFrame, (int(outer_top_line[0]) - 50, int(outer_top_line[1])), (int(outer_top_line[0] + 50), int(outer_top_line[1])), (0, 253, 0), 5)
         whiteFrame = cv2.line(whiteFrame, (int(inter_top_line[0]) - 50, int(inter_top_line[1])), (int(inter_top_line[0] + 50), int(inter_top_line[1])), (0, 253, 0), 5)
         pixels = math.sqrt(abs(int(outer_top_line[0]) - int(inter_top_line[0]))**2 + abs(int(outer_top_line[1]) - int(inter_top_line[1]))**2)
-        mm = round((pixels * 25.4) / 720, 2)
+        mm = top_dis = round((pixels * 25.4) / 720, 2)
         whiteFrame = cv2.putText(whiteFrame, f"{mm} mm", (int(outer_top_line[0] + 60), int(outer_top_line[1])), cv2.FONT_HERSHEY_COMPLEX, font_size, text_color, 3)
          
         # Plot green lines on bottom
@@ -431,7 +433,7 @@ class CardMeasurement(object):
         whiteFrame = cv2.line(whiteFrame, (int(outer_bottom_line[0]) - 50, int(outer_bottom_line[1])), (int(outer_bottom_line[0] + 50), int(outer_bottom_line[1])), (0, 253, 0), 5)
         whiteFrame = cv2.line(whiteFrame, (int(inner_bottom_line[0]) - 50, int(inner_bottom_line[1])), (int(inner_bottom_line[0] + 50), int(inner_bottom_line[1])), (0, 253, 0), 5)
         pixels = math.sqrt(abs(int(outer_bottom_line[0]) - int(inner_bottom_line[0]))**2 + abs(int(outer_bottom_line[1]) - int(inner_bottom_line[1]))**2)
-        mm = round((pixels * 25.4) / 720, 2)
+        mm = bottom_dis = round((pixels * 25.4) / 720, 2)
         whiteFrame = cv2.putText(whiteFrame, f"{mm} mm", (int(inner_bottom_line[0]), int(inner_bottom_line[1]) - 60), cv2.FONT_HERSHEY_COMPLEX, font_size, text_color, 3)
          
         # Plot green lines on right
@@ -439,7 +441,7 @@ class CardMeasurement(object):
         whiteFrame = cv2.line(whiteFrame, (int(outer_right_line[0]), int(outer_right_line[1]) - 50), (int(outer_right_line[0]), int(outer_right_line[1] + 50)), (0, 253, 0), 5)
         whiteFrame = cv2.line(whiteFrame, (int(inner_right_line[0]), int(inner_right_line[1] - 50)), (int(inner_right_line[0]), int(inner_right_line[1] + 50)), (0, 253, 0), 5)
         pixels = math.sqrt(abs(int(outer_right_line[0]) - int(inner_right_line[0]))**2 + abs(int(outer_right_line[1]) - int(inner_right_line[1]))**2)
-        mm = round((pixels * 25.4) / 720, 2)
+        mm = right_dis = round((pixels * 25.4) / 720, 2)
         whiteFrame = cv2.putText(whiteFrame, f"{mm} mm", (int(inner_right_line[0]), int(inner_right_line[1]) - 60), cv2.FONT_HERSHEY_COMPLEX, font_size, text_color, 3)
           
         # Plot green lines on left
@@ -447,39 +449,69 @@ class CardMeasurement(object):
         whiteFrame = cv2.line(whiteFrame, (int(outer_left_line[0]), int(outer_left_line[1]) - 50), (int(outer_left_line[0]), int(outer_left_line[1] + 50)), (0, 253, 0), 5)
         whiteFrame = cv2.line(whiteFrame, (int(inner_left_line[0]), int(inner_left_line[1] - 50)), (int(inner_left_line[0]), int(inner_left_line[1] + 50)), (0, 253, 0), 5)
         pixels = math.sqrt(abs(int(outer_left_line[0]) - int(inner_left_line[0]))**2 + abs(int(outer_left_line[1]) - int(inner_left_line[1]))**2)
-        mm = round((pixels * 25.4) / 720, 2)
+        mm = left_dis = round((pixels * 25.4) / 720, 2)
         whiteFrame = cv2.putText(whiteFrame, f"{mm} mm", (int(inner_left_line[0]), int(inner_left_line[1]) - 60), cv2.FONT_HERSHEY_COMPLEX, font_size, text_color, 3)
            
         if potrait_status: 
             whiteFrame = imutils.rotate_bound(whiteFrame, -90)  
             
         # Save image to directory
-        cv2.imwrite(filename, whiteFrame)
-
+        if save_image:
+            cv2.imwrite(filename, whiteFrame)
+        
+        return top_dis, bottom_dis, right_dis, left_dis
+    
+    def write_results(self, append, path, skipped=False, write_status='w'):  
+        if not skipped:  
+            with open(os.path.join(path, 'results.txt'), write_status) as w: 
+                a = ',' . join(list(map(lambda x: str(x), append))) + '\n'
+                if len(a.strip()) > 0:
+                    w.write(a) 
+        else:
+            with open(os.path.join(path, 'skipped_imgs.txt'), write_status) as w: 
+                a = ',' . join(list(map(lambda x: str(x), append))) + '\n'
+                if len(a.strip()) > 0:
+                    w.write(a) 
+                
+    def update_finish_status(self, path, status):
+        with open(os.path.join(path, 'running_status.txt'), 'w') as w:  
+            w.write(f'{status}')
 
 if __name__ == '__main__':
     
-    app = CardMeasurement()
-    
-    addr = 'D:\\Card-edge-measurement-release\\backside' 
-    addr_to_save = 'D:\\Card-edge-measurement-release\\outputs'
-    
+    # Specify the path to save
+    addr = './backside' 
+    addr_to_save = './outputs'
+    results_path = './results' 
     img_paths = os.listdir(addr)[:]
+    
+    # Create an instance of the class to use
+    app = CardMeasurement()  
+    
+    # Maintain the running status 
+    app.update_finish_status(results_path, 'RUNNING')
+    
+    # Clear the results file for the first run
+    app.write_results([], results_path, skipped=False)
+    app.write_results([], results_path, skipped=True)
+    
     for count, img_path in enumerate(img_paths):  
         
         print(f'#### Processing image {img_path} {count} from {len(img_paths)}')
         
         # Load the image,  
-        image = cv2.imread(os.path.join(addr, img_path), 0) 
+        image = cv2.imread(os.path.join(addr, img_path), 0)
         
         shadow = False
         try:
             image, potrait_status, outer_top_line, outer_bottom_line, outer_right_line, outer_left_line, inter_top_line, inner_bottom_line, inner_right_line, inner_left_line = app.image_segmentation(image, shadow=shadow)
-            app.plot_detection(image, potrait_status, outer_top_line, outer_bottom_line, outer_right_line, outer_left_line, inter_top_line, inner_bottom_line, inner_right_line, inner_left_line, filename=os.path.join(addr_to_save, img_path))
+            top_dis, bottom_dis, right_dis, left_dis = app.plot_detection(image, potrait_status, outer_top_line, outer_bottom_line, outer_right_line, outer_left_line, inter_top_line, inner_bottom_line, inner_right_line, inner_left_line, filename=os.path.join(addr_to_save, img_path), save_image=True)
+            app.write_results([img_path, top_dis, bottom_dis, right_dis, left_dis], results_path, write_status='a+')
         except:
+            app.write_results([img_path], results_path, skipped=True, write_status='a+')
             print(f'Imature detection of some border: image {img_path} is being skipped')
-            pass
         
-        print('Done\n\n')
-
- 
+        print('Done\n\n') 
+        
+    # Maintain the running status 
+    app.update_finish_status(results_path, 'STOP')

@@ -485,6 +485,9 @@ class CardMeasurement(object):
             return True
         else:
             return False
+        
+    def prepare_output_dir(self, folder_name):
+        [os.system(f'erase /s /q "{x}"') for x in os.listdir(f'{folder_name}')]
              
 if __name__ == '__main__':
     
@@ -502,7 +505,8 @@ if __name__ == '__main__':
     
     # Clear the results file for the first run
     app.write_results([], results_path, skipped=False)
-    app.write_results([], results_path, skipped=True)
+    app.write_results([], results_path, skipped=True) 
+    app.prepare_output_dir(addr_to_save) # Remove the existing output image files first
     
     for count, img_path in enumerate(img_paths):  
         

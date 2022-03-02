@@ -489,10 +489,10 @@ class CardMeasurement(object):
 if __name__ == '__main__':
     
     # Specify the path to save
-    addr = './backside' 
+    addr = './sources' 
     addr_to_save = './outputs'
     results_path = './results' 
-    img_paths = os.listdir(addr)[:5]
+    img_paths = os.listdir(addr)[:]
     
     # Create an instance of the class to use
     app = CardMeasurement()  
@@ -529,6 +529,7 @@ if __name__ == '__main__':
         
         else:
             print('Force closed')
+            break
         
     # Maintain the running status 
     app.update_information(results_path, 'running_status.txt', 'STOP')

@@ -486,8 +486,8 @@ class CardMeasurement(object):
         else:
             return False
         
-    def prepare_output_dir(self, folder_name):
-        [os.system(f'erase /s /q "{x}"') for x in os.listdir(f'{folder_name}')]
+    def prepare_output_dir(self, folder_name):   
+        [os.system(f'erase /s /q "{os.path.join(folder_name, x)}"') for x in os.listdir(os.path.join(os.path.realpath(__file__).replace(os.path.basename(__file__), ''), folder_name))]
              
 if __name__ == '__main__':
     
@@ -506,7 +506,9 @@ if __name__ == '__main__':
     # Clear the results file for the first run
     app.write_results([], results_path, skipped=False)
     app.write_results([], results_path, skipped=True) 
+    print('a call to remove', addr_to_save)
     app.prepare_output_dir(addr_to_save) # Remove the existing output image files first
+    print('Removed')
     
     for count, img_path in enumerate(img_paths):  
         

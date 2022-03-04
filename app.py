@@ -137,9 +137,10 @@ class CardMeasurement(object):
                                            cv2.RETR_CCOMP,
                                            cv2.CHAIN_APPROX_NONE) 
         cnts = sorted(cnts, key=lambda x: cv2.contourArea(x), reverse=True) 
-        whiteFrame = 255 * np.ones(seg_img.shape, np.uint8)
-        whiteFrame = cv2.drawContours(whiteFrame, cnts, -1, (0, 0, 0), 3)
-        plt.imshow(whiteFrame) 
+        
+        # whiteFrame = 255 * np.ones(seg_img.shape, np.uint8)
+        # whiteFrame = cv2.drawContours(whiteFrame, cnts, -1, (0, 0, 0), 3)
+        # plt.imshow(whiteFrame) 
         
         return cnts
      
@@ -166,7 +167,8 @@ class CardMeasurement(object):
         y_to_shift = abs(right_center[1] - left_center[1])
         return x_to_shift / 2.0, y_to_shift / 2.0
     
-    def get_img_center_coordinates(self, upper_center, lower_center, right_center, left_center, x_to_shift, y_to_shift):
+    # Un-used method
+    def get_img_center_coordinates(self, image, upper_center, lower_center, right_center, left_center, x_to_shift, y_to_shift):
         
         # Get the farest coordinates from the outest of the original image size 
         start_upper_left, start_upper_right, start_lower_left, start_lower_right = [0, 0], [image.shape[1], 0], [0, image.shape[0]], [image.shape[1], image.shape[0]] 
@@ -185,13 +187,16 @@ class CardMeasurement(object):
     def get_rotate_direction(self, upper_center, lower_center):
         rotation_status = 'CENTER'
         
+        # Extend the coordinate exceeds the maximum line to the an accurate measurements
+        upper_center, lower_center =  self.line_continuation(upper_center, lower_center)
+        
         dis = abs(upper_center[0] - lower_center[0])
-        if dis >= 20:
+        if dis >= 5:
             if upper_center[0] > lower_center[0]: # rotate left
                 rotation_status = 'ROTATE_LEFT'
             else:
-                rotation_status = 'ROTATE_RIGHT'
-        print(rotation_status, upper_center, lower_center, abs(upper_center[0] - lower_center[0]))
+                rotation_status = 'ROTATE_RIGHT' 
+                
         return dis, rotation_status
          
     def rotate_image(self, image, rotation_status):
@@ -199,12 +204,12 @@ class CardMeasurement(object):
         (cX, cY) = (w // 2, h // 2)
         M = None
         if rotation_status == 'ROTATE_LEFT':
-            M = cv2.getRotationMatrix2D((cX, cY), 0.1, 1.0)
+            M = cv2.getRotationMatrix2D((cX, cY), 0.08, 1.0)
         elif rotation_status == 'ROTATE_RIGHT':
-            M = cv2.getRotationMatrix2D((cX, cY), -0.1, 1.0)
+            M = cv2.getRotationMatrix2D((cX, cY), -0.08, 1.0)
         else:
             M = cv2.getRotationMatrix2D((cX, cY), 0, 1.0)
-        rotated = cv2.warpAffine(image, M, (w, h), borderValue=(255,255,255)) 
+        rotated = cv2.warpAffine(image, M, (w, h), borderValue=(255, 255, 255)) 
         return rotated
     
     def image_center(self, image):
@@ -228,26 +233,25 @@ class CardMeasurement(object):
             image = self.rotate_image(image, rotation_status)
             
             if dis < min_dis:
-                min_dis = dis
-                count = 0
+                min_dis = dis 
             else:
                 count += 1
-              
-            if dis < 15:
-                break
+                
+            print(dis, rotation_status, count)
             
-            if dis < 20:
-                break
+            if count > 5 and dis < 10: 
+                break 
             
-            if dis < 25:
-                break
+            if count > 20 and dis < 15: 
+                break 
+            
+            if count > 20 and dis < 20: 
+                break 
             
             # Will automatically go out when there is no more update
-            if count > 20 and dis < 35: 
-                break  
-            
-            if count > 25:
-                break
+            if count > 30 and dis < 50: 
+                break   
+             
             
         print('Done rotating')    
         return image, central
@@ -488,54 +492,69 @@ class CardMeasurement(object):
         
     def prepare_output_dir(self, folder_name):   
         [os.system(f'erase /s /q "{os.path.join(folder_name, x)}"') for x in os.listdir(os.path.join(os.path.realpath(__file__).replace(os.path.basename(__file__), ''), folder_name))]
-             
+         
+    def line_continuation(self, p1, p2):
+        
+        line_length = 500
+        
+        theta = np.arctan2(p1[1] - p2[1], p1[0] - p2[0])
+        
+        endpt_x = int(p1[0] + line_length * np.cos(theta))
+        endpt_y = int(p1[1] + line_length * np.sin(theta))
+        
+        endpt_x1 = int(p1[0] - line_length * np.cos(theta))
+        endpt_y1 = int(p1[1] - line_length * np.sin(theta))
+         
+        return (endpt_x, endpt_y), (endpt_x1, endpt_y1)    
+    
+    def main(self):
+        
+        # Specify the path to save
+        addr = './sources' 
+        addr_to_save = './outputs'
+        results_path = './results' 
+        img_paths = os.listdir(addr)[:]
+         
+        
+        # Maintain the running status 
+        self.update_information(results_path, 'running_status.txt', 'RUNNING')
+        
+        # Clear the results file for the first run
+        self.write_results([], results_path, skipped=False)
+        self.write_results([], results_path, skipped=True)  
+        self.prepare_output_dir(addr_to_save) # Remove the existing output image files first 
+        
+        for count, img_path in enumerate(img_paths):  
+            
+            # Check if need to stop forcely
+            if not self.is_to_stop(results_path, 'running_status.txt'):
+                
+                # Maintain the running status 
+                print(f'#### Processing image {img_path} {count} from {len(img_paths)}') 
+                self.update_information(results_path, 'current_process.txt', f'{img_path} > {count} from {len(img_paths)}')
+                
+                # Load the image,  
+                image = cv2.imread(os.path.join(addr, img_path), 0)
+                
+                shadow = False
+                try:
+                    image, potrait_status, outer_top_line, outer_bottom_line, outer_right_line, outer_left_line, inter_top_line, inner_bottom_line, inner_right_line, inner_left_line = self.image_segmentation(image, shadow=shadow)
+                    top_dis, bottom_dis, right_dis, left_dis = self.plot_detection(image, potrait_status, outer_top_line, outer_bottom_line, outer_right_line, outer_left_line, inter_top_line, inner_bottom_line, inner_right_line, inner_left_line, filename=os.path.join(addr_to_save, img_path), save_image=True)
+                    self.write_results([img_path, top_dis, bottom_dis, right_dis, left_dis], results_path, write_status='a+')
+                except:
+                    self.write_results([img_path], results_path, skipped=True, write_status='a+')
+                    print(f'Imature detection of some border: image {img_path} is being skipped')
+                
+                print('Done\n\n')
+            
+            else:
+                print('Force closed')
+                break
+            
+        # Maintain the running status 
+        self.update_information(results_path, 'running_status.txt', 'STOP')
+    
 if __name__ == '__main__':
+    app = CardMeasurement()
+    app.main()
     
-    # Specify the path to save
-    addr = './sources' 
-    addr_to_save = './outputs'
-    results_path = './results' 
-    img_paths = os.listdir(addr)[:]
-    
-    # Create an instance of the class to use
-    app = CardMeasurement()  
-    
-    # Maintain the running status 
-    app.update_information(results_path, 'running_status.txt', 'RUNNING')
-    
-    # Clear the results file for the first run
-    app.write_results([], results_path, skipped=False)
-    app.write_results([], results_path, skipped=True) 
-    print('a call to remove', addr_to_save)
-    app.prepare_output_dir(addr_to_save) # Remove the existing output image files first
-    print('Removed')
-    
-    for count, img_path in enumerate(img_paths):  
-        
-        # Check if need to stop forcely
-        if not app.is_to_stop(results_path, 'running_status.txt'):
-            
-            # Maintain the running status 
-            print(f'#### Processing image {img_path} {count} from {len(img_paths)}') 
-            app.update_information(results_path, 'current_process.txt', f'{img_path} > {count} from {len(img_paths)}')
-            
-            # Load the image,  
-            image = cv2.imread(os.path.join(addr, img_path), 0)
-            
-            shadow = False
-            try:
-                image, potrait_status, outer_top_line, outer_bottom_line, outer_right_line, outer_left_line, inter_top_line, inner_bottom_line, inner_right_line, inner_left_line = app.image_segmentation(image, shadow=shadow)
-                top_dis, bottom_dis, right_dis, left_dis = app.plot_detection(image, potrait_status, outer_top_line, outer_bottom_line, outer_right_line, outer_left_line, inter_top_line, inner_bottom_line, inner_right_line, inner_left_line, filename=os.path.join(addr_to_save, img_path), save_image=True)
-                app.write_results([img_path, top_dis, bottom_dis, right_dis, left_dis], results_path, write_status='a+')
-            except:
-                app.write_results([img_path], results_path, skipped=True, write_status='a+')
-                print(f'Imature detection of some border: image {img_path} is being skipped')
-            
-            print('Done\n\n')
-        
-        else:
-            print('Force closed')
-            break
-        
-    # Maintain the running status 
-    app.update_information(results_path, 'running_status.txt', 'STOP')

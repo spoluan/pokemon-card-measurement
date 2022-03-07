@@ -467,24 +467,50 @@ class CardMeasurement(object):
     
     def write_results(self, append, path, skipped=False, write_status='w'):  
         if not skipped:  
-            with open(os.path.join(path, 'results.txt'), write_status) as w: 
-                a = ',' . join(list(map(lambda x: str(x), append))) + '\n'
-                if len(a.strip()) > 0:
-                    w.write(a) 
+            con = False
+            while not con:
+                try: 
+                    with open(os.path.join(path, 'results.txt'), write_status) as w: 
+                        a = ',' . join(list(map(lambda x: str(x), append))) + '\n'
+                        if len(a.strip()) > 0:
+                            w.write(a) 
+                    con = True
+                except:
+                    pass
         else:
-            with open(os.path.join(path, 'skipped_imgs.txt'), write_status) as w: 
-                a = ',' . join(list(map(lambda x: str(x), append))) + '\n'
-                if len(a.strip()) > 0:
-                    w.write(a) 
+            con = False
+            while not con:
+                try:
+                    with open(os.path.join(path, 'skipped_imgs.txt'), write_status) as w: 
+                        a = ',' . join(list(map(lambda x: str(x), append))) + '\n'
+                        if len(a.strip()) > 0:
+                            w.write(a) 
+                    con = True
+                except:
+                    pass
                 
     def update_information(self, path, file, status):
-        with open(os.path.join(path, file), 'w') as w:  
-            w.write(f'{status}')
+        con = False
+        while not con:
+            try:
+                with open(os.path.join(path, file), 'w') as w:  
+                    w.write(f'{status}')
+                con = True
+            except:
+                pass
             
     def is_to_stop(self, path, file):
+        con = False
         status = ''
-        with open(os.path.join(path, file), 'r') as w:  
-            status = w.read().strip()
+        while not con:
+            try:
+                with open(os.path.join(path, file), 'r') as w:  
+                    status = w.read().strip()
+                con = True
+            except:
+                pass
+            
+            
         if status == 'FORCE STOP':
             return True
         else:

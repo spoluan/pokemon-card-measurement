@@ -39,9 +39,5 @@ for x in range(4):
     time.sleep(1)
  
 s.close() 
-
-for x in range(4):
-    s.send(status.encode())
-    print(s.recv(1024).decode())
-    time.sleep(1)
+ 
 

@@ -14,18 +14,18 @@ These are the commands you can use to control the program through a socket serve
 
 ## Sample inputs
 <p align="center">
-	<img src="sources/0217B012.jpg" width="128"/>
-	<img src="sources/0217B007.jpg" width="128"/>
-	<img src="sources/0217B014.jpg" width="128"/>
-	<img src="sources/0217B044.jpg" width="128"/>
-	<img src="sources/0217B025.jpg" width="128"/>
+	<img src="sources/0217B001.jpg" width="128"/>
+	<img src="sources/0217B002.jpg" width="128"/>
+	<img src="sources/0217B003.jpg" width="128"/>
+	<img src="sources/0217B004.jpg" width="128"/>
+	<img src="sources/0217B005.jpg" width="128"/>
 </p>
 
 ## Sample outputs
 <p align="center">
-	<img src="outputs/0217B012.jpg" width="128"/>
-	<img src="outputs/0217B007.jpg" width="128"/>
-	<img src="outputs/0217B014.jpg" width="128"/>
-	<img src="outputs/0217B044.jpg" width="128"/>
-	<img src="outputs/0217B025.jpg" width="128"/>
+	<img src="outputs/0217B001.jpg" width="128"/>
+	<img src="outputs/0217B002.jpg" width="128"/>
+	<img src="outputs/0217B003.jpg" width="128"/>
+	<img src="outputs/0217B004.jpg" width="128"/>
+	<img src="outputs/0217B005.jpg" width="128"/>
 </p>

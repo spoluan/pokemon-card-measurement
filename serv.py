@@ -138,9 +138,8 @@ class CardServer(object):
              
         s.bind((self.ip, self.port))        
         print ("SOCKET BIND TO %s" % (self.port))
-            
-        status = ''
-        while status != 'STOP': 
+             
+        while True: 
             
             print('>> WAITING FOR REQUEST')
             

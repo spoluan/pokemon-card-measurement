@@ -30,14 +30,15 @@ s.connect((host_ip, port))
 print('Connected')
 
 print('Sending command ...')
-status = 'STOP SERVER' # RUN, FORCE STOP, RESULTS, CURRENT, STOP SERVER
+status = 'RUN' # RUN, FORCE STOP, RESULTS, CURRENT, STOP SERVER
   
 # For loop is made for the sake of testing only to check the robustness of the server
 for x in range(4):
-    s.send(status.encode())
-    print(s.recv(1024).decode())
+    s.send(status.encode()) 
+    rec = s.recv(1024).decode()
+    # print(rec)
     time.sleep(1)
  
-s.close() 
+# s.close() 
  
 

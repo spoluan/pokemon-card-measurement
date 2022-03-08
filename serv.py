@@ -23,6 +23,7 @@ class CardServer(object):
         self.ip = '127.0.0.1'
         self.port = 20220
         self.is_running = False
+        self.is_stop_server = False
 
     def read_write_information(self, path, file, write=False):
         status = ''
@@ -63,14 +64,13 @@ class CardServer(object):
             print('ISSUES:', a)
              
     def recv_data(self, c):  
-        
-        is_stop_server = False
+         
         while True:  
             
             try:
                 recv = c.recv(1024).decode() 
             except Exception as a:
-                print('ISSUES:', a)   
+                print('ISSUES:', a)
                 
             if recv != '': 
                 
@@ -113,8 +113,8 @@ class CardServer(object):
                 elif recv.strip() == 'STOP SERVER': 
                     print('>> STOP SERVER ...') 
                     stop_server = self.write_information(self.results_path, 'running_status.txt', contents='FORCE STOP')
-                    self.is_running = False 
-                    is_stop_server = True 
+                    
+                    self.is_stop_server = True 
                     if stop_server == 'DONE':
                         c.send('SERVER_STOPPED'.encode())   
                     print('DONE')
@@ -127,9 +127,7 @@ class CardServer(object):
                 time.sleep(1)
             
             else:  
-                break
-            
-        return is_stop_server
+                break 
           
     def start_server(self):
       
@@ -147,10 +145,12 @@ class CardServer(object):
             
             c, addr = s.accept() # Command: RUN, FORCE STOP, RESULTS, CURRENT   
             print ('GOT A NEW CONNECTION FROM:', addr)
-             
-            if not self.recv_data(c): 
-                continue 
             
+            # Create thread for data receiving
+            threading.Thread(target=self.recv_data, args=(c, )).start() 
+            
+            if not self.is_stop_server: 
+                continue  
             else:
                 c.close()
                 break 

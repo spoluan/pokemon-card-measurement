@@ -126,8 +126,7 @@ class CardServer(object):
                 
                 time.sleep(1)
             
-            else: 
-                
+            else:  
                 break
             
         return is_stop_server

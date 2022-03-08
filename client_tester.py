@@ -7,6 +7,7 @@ Created on Mon Mar  7 15:17:34 2022
  
 import socket  
 import sys
+import time
  
 try:
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -30,9 +31,17 @@ print('Connected')
 
 print('Sending command ...')
 status = 'STOP SERVER' # RUN, FORCE STOP, RESULTS, CURRENT, STOP SERVER
-s.send(status.encode());
+  
+# For loop is made for the sake of testing only to check the robustness of the server
+for x in range(4):
+    s.send(status.encode())
+    print(s.recv(1024).decode())
+    time.sleep(1)
+ 
+s.close() 
 
-print (s.recv(1024).decode())
-
-s.close()
+for x in range(4):
+    s.send(status.encode())
+    print(s.recv(1024).decode())
+    time.sleep(1)
 

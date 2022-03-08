@@ -1,1 +1,1 @@
-FORCE STOP
+STOP

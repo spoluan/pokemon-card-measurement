@@ -9,15 +9,17 @@ import socket
 import os  
 import subprocess       
 import threading # thread6 
+import time 
 
 class CardServer(object):
     
     def __init__(self):
         
-        self.addr = './sources' 
-        self.addr_to_save = './outputs'
-        self.results_path = './results' 
-        self.main_path = "."
+        abs_path = os.path.dirname(__file__)
+        self.addr = os.path.join(abs_path, 'sources' )
+        self.addr_to_save = os.path.join(abs_path, 'outputs')
+        self.results_path = os.path.join(abs_path, 'results')
+        self.main_path = abs_path
         self.ip = '127.0.0.1'
         self.port = 20220
         self.is_running = False
@@ -29,28 +31,26 @@ class CardServer(object):
             try: 
                 with open(os.path.join(path, file), 'r+') as rw:  
                     status = rw.read().strip() 
-                    if write == True:
-                        print('Write ..', write)
+                    if write == True: 
                         rw.seek(0)
                         rw.write('')
                         rw.truncate()
                 used = True
             except Exception as err: 
-                print(err)
-        print('Result to return', status)
+                print('ISSUES:', err) 
+                
         return status
     
     def write_information(self, path, file, contents=''):
-        used = False
+        used = False 
         while not used:
             try:
                 with open(os.path.join(path, file), 'w') as w:  
-                    print('Is file exist:', os.path.isfile(os.path.join(path, file)))
-                    w.write(contents)
-                    print('Finished writing ...')
+                    w.write(contents) 
                 used = True
             except Exception as err: 
-                print(err)
+                print('ISSUES:', err) 
+                
         return 'DONE'
     
     def start_app(self, main_path):
@@ -58,67 +58,104 @@ class CardServer(object):
             cmd = f'python {os.path.join(main_path, "app.py")}' 
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
             out, err = p.communicate()  
-            output = p.stdout.readline()
-            print(output, out, err)
+            # output = p.stdout.readline() 
         except Exception as a:
-            print(a)
+            print('ISSUES:', a)
+             
+    def recv_data(self, c):  
+        
+        is_stop_server = False
+        while True:  
+            
+            try:
+                recv = c.recv(1024).decode() 
+            except Exception as a:
+                print('ISSUES:', a)   
+                
+            if recv != '': 
+                
+                if recv.strip() == 'RUN': 
+                    print('RUN')
+                    if not self.is_running:
+                        a_thread = threading.Thread(target=self.start_app, args = (self.main_path, ))
+                        a_thread.start()
+                        c.send('APP HAS STARTED'.encode()) 
+                        self.is_running = True
+                    else:
+                        c.send('APP IS RUNNING'.encode()) 
+                    print('DONE')
+                    
+                elif recv.strip() == 'FORCE STOP':
+                    print('>> FORCE STOP ...')
+                    if self.write_information(self.results_path, 'running_status.txt', contents='FORCE STOP') == 'DONE':
+                        c.send('DONE FORCE STOP'.encode()) 
+                    print('DONE')
+                    self.is_running = False
+                    
+                elif recv.strip() == 'RESULTS':
+                    print('>> RESULTS ...')
+                    results = self.read_write_information(self.results_path, 'results.txt', write=True).encode()
+                    if len(results.strip()) > 0:
+                        c.send(results)
+                    else:
+                        c.send(b'EMPTY')
+                    print('DONE')
+                    
+                elif recv.strip() == 'CURRENT':
+                    print('>> CURRENT ...')
+                    current = self.read_write_information(self.results_path, 'current_process.txt', write=False).encode()
+                    if len(current.strip()) > 0:
+                        c.send(current)
+                    else:
+                        c.send(b'EMPTY')
+                    print('DONE')
+                    
+                elif recv.strip() == 'STOP SERVER': 
+                    print('>> STOP SERVER ...') 
+                    stop_server = self.write_information(self.results_path, 'running_status.txt', contents='FORCE STOP')
+                    self.is_running = False 
+                    is_stop_server = True 
+                    if stop_server == 'DONE':
+                        c.send('SERVER_STOPPED'.encode())   
+                    print('DONE')
+                    break
+                
+                else:
+                    c.send('UNKNOWN COMMAND'.encode())
+                    print('>> UNKNOWN COMMAND ...') 
+                
+                time.sleep(1)
+            
+            else: 
+                
+                break
+            
+        return is_stop_server
           
     def start_server(self):
       
         s = socket.socket()        
              
         s.bind((self.ip, self.port))        
-        print ("socket binded to %s" %(self.port))
-          
-        s.listen(5)    
-        print ("socket is listening")
-        
+        print ("SOCKET BIND TO %s" % (self.port))
+            
         status = ''
         while status != 'STOP': 
             
-            print('Waiting for request ...')
+            print('>> WAITING FOR REQUEST')
+            
+            s.listen(5)    
+            print ("SOCKET IS LISTENING ...")
             
             c, addr = s.accept() # Command: RUN, FORCE STOP, RESULTS, CURRENT   
-            print ('Got connection from', addr)
+            print ('GOT A NEW CONNECTION FROM:', addr)
+             
+            if not self.recv_data(c): 
+                continue 
             
-            # Handle data sent from client
-            recv = c.recv(1024).decode()
-            
-            if recv.strip() == 'RUN': 
-                if not self.is_running:
-                    a_thread = threading.Thread(target=self.start_app, args = (self.main_path, ))
-                    a_thread.start()
-                    c.send('RUNNING'.encode())
-                    print('RUN')
-                    self.is_running = True
-            elif recv.strip() == 'FORCE STOP':
-                print('Force stop ...')
-                if self.write_information(self.results_path, 'running_status.txt', contents='FORCE STOP') == 'DONE':
-                    c.send('DONE FORCE STOP'.encode())
-                print('Done')
-                self.is_running = False
-            elif recv.strip() == 'RESULTS':
-                print('Get result ...')
-                c.send(self.read_write_information(self.results_path, 'results.txt', write=True).encode())
-                print('Done')
-            elif recv.strip() == 'CURRENT':
-                print('Get current running status ...')
-                c.send(self.read_write_information(self.results_path, 'current_process.txt', write=False).encode())
-                print('Done')
-            elif recv.strip() == 'STOP SERVER':
-                print('STOP SERVER')
-                print('Force stop ...')
-                if self.write_information(self.results_path, 'running_status.txt', contents='FORCE STOP') == 'DONE':
-                    c.send('DONE FORCE STOP'.encode())
-                c.close()
-                status = 'STOP'
-                self.is_running = False
             else:
-                print('Unknown command')
-            
-            if recv.strip() != 'STOP SERVER':
-                send = 'Connected'
-                c.send(send.encode()) 
+                c.close()
+                break 
 
 if __name__ == '__main__':
     app = CardServer()

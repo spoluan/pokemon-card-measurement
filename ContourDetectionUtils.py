@@ -12,6 +12,14 @@ from PIL import Image
 class ContourDetectionUtils(object):
     
     def get_contours_outer(self, image):
+        # Im read
+        # import os 
+        # addr = 'D:\\post\\pokemon-card-measurement\\Datasets\\data'
+        # img_path = '4.jpg'  #, gx_10, gx_47, gx_8 
+        # addr_to_save = './outputs'
+        # image = cv2.imread(os.path.join(addr, img_path), 1)
+        
+        
         # Convert to grayscale, and blur it slightly
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (9, 9), 0)
@@ -32,13 +40,61 @@ class ContourDetectionUtils(object):
         # Sort the countour based on their area
         cnts = sorted(cnts, key=lambda x: cv2.contourArea(x), reverse=True)
         
+        # whiteFrame = 255 * np.ones(image.shape, np.uint8)
+        # whiteFrame = cv2.drawContours(whiteFrame, cnts, -1, (0, 0, 0), -1)
+        # Image.fromarray(whiteFrame).convert('RGB').save(os.path.join(addr_to_save, f'{img_path.split(".")[0]}_out.jpg'))
+   
+        return cnts, hierarchy
+
+    def get_contours_outer_vbeta(self, image):
+        
+        # Im read
+        # import os 
+        # addr = 'D:\\post\\pokemon-card-measurement\\Datasets\\data'
+        # img_path = '4.jpg'  #, gx_10, gx_47, gx_8 
+        # addr_to_save = './outputs'
+        # image = cv2.imread(os.path.join(addr, img_path), 1)
+        
+        (lower, upper) = ([140, 140, 140], [255, 255, 255])
+        # create NumPy arrays from the boundaries
+        lower = np.array(lower, dtype = "uint8")
+        upper = np.array(upper, dtype = "uint8")
+        # find the colors within the specified boundaries and apply
+        # the mask
+        mask = cv2.inRange(image, lower, upper) 
+        # output = cv2.bitwise_and(img, img, mask = mask)
+
+        _, edged = cv2.threshold(mask, 160, 255, cv2.THRESH_BINARY_INV) # Best 175
+
+        cnts, hierarchy = cv2.findContours(edged.copy(),
+                                           cv2.RETR_EXTERNAL,
+                                           cv2.CHAIN_APPROX_NONE)
+         
+        whiteFrame = 255 * np.ones(edged.shape, np.uint8)
+        whiteFrame = cv2.drawContours(whiteFrame, cnts, -1, (0, 0, 0), -1)
+
+        CC = cv2.Canny(np.array(whiteFrame), 0, 180)
+
+        cnts, hierarchy = cv2.findContours(CC.copy(),
+                                           cv2.RETR_EXTERNAL,
+                                           cv2.CHAIN_APPROX_NONE)
+        whiteFrame = 255 * np.ones(image.shape, np.uint8) 
+        # whiteFrame = cv2.drawContours(whiteFrame, cnts, -1, (0, 0, 0), -1)  
+        # Image.fromarray(whiteFrame).convert('RGB').save(os.path.join(addr_to_save, f'{img_path.split(".")[0]}_out.jpg'))
+   
         return cnts, hierarchy
     
+    
     # Use for extracting the coordinate of the outermost
-    def get_contour_full_border(self, original): 
+    def get_contour_full_border(self, image): 
         
-        image = original.copy()
-        gray = cv2.cvtColor(original, cv2.COLOR_BGR2GRAY) 
+        # import os 
+        # addr = 'D:\\post\\pokemon-card-measurement\\Datasets\\data'
+        # img_path = '4.jpg'  #, gx_10, gx_47, gx_8 
+        # addr_to_save = './outputs'
+        # image = cv2.imread(os.path.join(addr, img_path), 1)
+         
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) 
         _, edged = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY) # Update the value to adjust
         _, thresh = cv2.threshold(edged, 225, 255, cv2.THRESH_BINARY_INV)
 
@@ -69,9 +125,8 @@ class ContourDetectionUtils(object):
                                            cv2.CHAIN_APPROX_NONE)  
         
         # whiteFrame = 255 * np.ones(threshed.shape, np.uint8)
-        # whiteFrame = cv2.drawContours(whiteFrame, cnts, -1, (0, 0, 0), -1) 
-        # Image.fromarray(whiteFrame).convert('RGB').save(f'D:\\Card-contour-detection\\Datasets/{file}_mat.jpg')
-
+        # whiteFrame = cv2.drawContours(whiteFrame, cnts, -1, (0, 0, 0), -1)  
+        # cv2.imwrite(os.path.join(addr_to_save, img_path), whiteFrame)
         return cnts, hierarchy
     
     # Use for extracting the inner border line (option two)
@@ -146,7 +201,7 @@ class ContourDetectionUtils(object):
         
         # Apply the gap of the outer line to prevent from being re-detected
         print('Apply the gap of the outer line to prevent from being re-detected')
-        gap_removal = 10
+        gap_removal = 20
         whiteFrame = whiteFrame[gap_removal:-gap_removal, gap_removal:-gap_removal]
         
         return whiteFrame, cnts, gap_removal 
@@ -177,6 +232,7 @@ class ContourDetectionUtils(object):
         mag = mag / mag.max() * 255
         mag = np.uint8(mag)
         
+        # C = cv2.Canny(np.array(mag), 0, 180)
         _, thresh = cv2.threshold(mag, 35, 255, cv2.THRESH_BINARY_INV)
         gray = cv2.cvtColor(np.array(thresh), cv2.COLOR_RGB2GRAY) 
         

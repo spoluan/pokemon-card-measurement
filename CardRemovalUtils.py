@@ -53,7 +53,7 @@ class CardRemovalUtils(object):
         
         # Remove the outer rectangle of the card to prevent from misdetection of the inner lines
         print('Remove the outer rectangle of the card to prevent from misdetection of the inner lines')
-        con = 30 
+        con = 35 
         y_min, y_max, x_min, x_max = removed_b_box[0], removed_b_box[1], removed_b_box[2], removed_b_box[3] 
         whiteFrames[y_min - con:y_max  + con, x_min - con:x_max + con] = 255 * np.ones(whiteFrames[y_min - con:y_max  + con, x_min - con:x_max + con].shape, np.uint8)
           

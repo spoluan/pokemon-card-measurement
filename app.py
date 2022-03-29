@@ -6,7 +6,7 @@ Created on Tue Feb 22 11:29:59 2022
 """
 
 import os
-os.chdir("D:\\Card-contour-detection")  
+os.chdir("D:\\post\\pokemon-card-measurement")  
 import cv2    
 from FileUtils import FileUtils
 from RotationUtils import RotationUtils
@@ -26,19 +26,23 @@ class CardMeasurement(object):
         self.cardRemovalUtils = CardRemovalUtils()
         self.cardDrawUtils = CardDrawUtils()
     
-    def image_segmentation_backside_pokemon_card(self, image, img_path):
-        
+    def image_segmentation_backside_pokemon_card(self, image, img_path): 
+          
         # If the image is potrait rotate it 
         image, potrait_status = self.rotationUtils.is_potrait_then_rotate(image, rotate_status='START')
         
         # Rotate the image to the center 
         image, central = self.rotationUtils.image_auto_rotation(image)
-         
+        
+        img = image.copy()
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR) 
+        
         # Get the outer line of the card 
         cnts, top, bottom, right, left, \
             one_top, two_bottom, one_right, two_left, \
-            top_line, bottom_line, right_line, left_line = self.lineUtils.get_outermost_line_to_measure(image, central, is_ouside=True, card_type=img_path)
-        
+            top_line, bottom_line, right_line, left_line, central = self.lineUtils.get_outermost_line_to_measure(image, central, is_ouside=True, card_type=img_path)
+         
         # Remove the center of the card to reduce some computation
         image_1, removed_b_box = self.cardRemovalUtils.remove_card_center(image, central)
         
@@ -54,7 +58,7 @@ class CardMeasurement(object):
         # Extract inner lines of the card 
         cnts, top, bottom, right, left, \
             one_top, two_bottom, one_right, two_left, \
-            top_center_coordinate, bottom_center_coordinate, right_center_coordinate, left_center_coordinate = self.lineUtils.get_outermost_line_to_measure(whiteFrames, central, is_binary=True, is_ouside=False)
+            top_center_coordinate, bottom_center_coordinate, right_center_coordinate, left_center_coordinate, _ = self.lineUtils.get_outermost_line_to_measure(whiteFrames, central, is_binary=True, is_ouside=False, card_type=img_path)
        
         # To be used as outer and inner coordinates
         outer_top_line, outer_bottom_line, outer_right_line, outer_left_line = \
@@ -65,7 +69,7 @@ class CardMeasurement(object):
         inner_top_line, inner_bottom_line, inner_right_line, inner_left_line = \
             top_center_coordinate, bottom_center_coordinate, right_center_coordinate, left_center_coordinate
         
-        return image, potrait_status, outer_top_line, outer_bottom_line, outer_right_line, outer_left_line, inner_top_line, inner_bottom_line, inner_right_line, inner_left_line
+        return img, potrait_status, outer_top_line, outer_bottom_line, outer_right_line, outer_left_line, inner_top_line, inner_bottom_line, inner_right_line, inner_left_line
       
     def process(self, addr, img_paths, addr_to_save, results_path, card_model='backside_pokemon_card'):
         for count, img_path in enumerate(img_paths):  
@@ -76,16 +80,16 @@ class CardMeasurement(object):
                 # Maintain the running status 
                 print(f'#### Processing image {img_path} {count} from {len(img_paths)}') 
                 self.fileUtils.update_information(results_path, 'current_process.txt', f'{img_path} > {count} from {len(img_paths)}')
-                
+                 
                 # Load the image,  
-                image = cv2.imread(os.path.join(addr, img_path), 0)
+                image = cv2.imread(os.path.join(addr, img_path), 1) # 0 | 1 = GRAY | RGB
                  
                 try:
                     
                     # Different for every card model
                     if card_model == 'backside_pokemon_card':
                         image, potrait_status, outer_top_line, outer_bottom_line, outer_right_line, outer_left_line, inter_top_line, inner_bottom_line, inner_right_line, inner_left_line = self.image_segmentation_backside_pokemon_card(image, img_path)
-                     
+                        
                     top_dis, bottom_dis, right_dis, left_dis = self.cardDrawUtils.plot_detection(image, potrait_status, outer_top_line, outer_bottom_line, outer_right_line, outer_left_line, inter_top_line, inner_bottom_line, inner_right_line, inner_left_line, filename=os.path.join(addr_to_save, img_path), save_image=True)
                     self.fileUtils.write_results([img_path, top_dis, bottom_dis, right_dis, left_dis], results_path, write_status='a+')
                 except Exception as a:
@@ -102,10 +106,10 @@ class CardMeasurement(object):
     def main(self):
         
         # Specify the path to save
-        addr = './sources' 
+        addr = './Datasets/data-fix-detected' # ./sources' 
         addr_to_save = './outputs'
         results_path = './results' 
-        img_paths = os.listdir(addr)[:] 
+        img_paths = [x for x in os.listdir(addr)[:] if '' in x] 
         
         # Maintain the running status 
         self.fileUtils.update_information(results_path, 'running_status.txt', 'RUNNING')

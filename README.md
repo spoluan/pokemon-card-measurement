@@ -14,18 +14,18 @@ These are the commands you can use to control the program through a socket serve
 
 ## Sample inputs
 <p align="center">
-	<img src="sources/0217B001.jpg" width="128"/>
-	<img src="sources/0217B002.jpg" width="128"/>
-	<img src="sources/0217B003.jpg" width="128"/>
-	<img src="sources/0217B004.jpg" width="128"/>
-	<img src="sources/0217B005.jpg" width="128"/>
+	<img src="Datasets/data-fixed-detected/normal_4.jpg" width="128"/>
+	<img src="Datasets/data-fixed-detected/vcard_2.jpg" width="128"/>
+	<img src="Datasets/data-fixed-detected/vmax_poke_25.jpg" width="128"/>
+	<img src="Datasets/data-fixed-detected/vstar_6.jpg" width="128"/>
+	<img src="Datasets/data-fixed-detected/vmax_48.jpg" width="128"/>
 </p>
 
 ## Sample outputs
 <p align="center">
-	<img src="outputs/0217B001.jpg" width="128"/>
-	<img src="outputs/0217B002.jpg" width="128"/>
-	<img src="outputs/0217B003.jpg" width="128"/>
-	<img src="outputs/0217B004.jpg" width="128"/>
-	<img src="outputs/0217B005.jpg" width="128"/>
+	<img src="sample outputs (better prediction)/normal_4.jpg" width="128"/>
+	<img src="sample outputs (better prediction)/vcard_2.jpg" width="128"/>
+	<img src="sample outputs (better prediction)/vmax_poke_25.jpg" width="128"/>
+	<img src="sample outputs (better prediction)/vstar_6.jpg" width="128"/>
+	<img src="sample outputs (better prediction)/vmax_48.jpg" width="128"/>
 </p>

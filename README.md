@@ -15,9 +15,9 @@ These are the commands you can use to control the program through a socket serve
 ## Sample inputs
 <p align="center">
 	<img src="sources/0217B001 - Copy - Copy - Copy.jpg" width="128"/>
-	<img src="sources/0217B001.jpg.jpg" width="128"/>
+	<img src="sources/0217B001.jpg" width="128"/>
 	<img src="sources/0217B002 - Copy - Copy - Copy.jpg" width="128"/>
-	<img src="sources/0217B001 - Copy - Copy.jpg.jpg" width="128"/>
+	<img src="sources/0217B001 - Copy - Copy.jpg" width="128"/>
 	<img src="sources/0217B001 - Copy.jpg" width="128"/>
 </p>
 

@@ -1,6 +1,6 @@
 ## Descriptions
 
-Pokemon cards have become very popular in recent years. A single card can cost thousands of dollars. One of the factors that affect a card's cost is its distance from the outer border to the inner border. Manually measuring it can be very time consuming. Using this program, Pokemon cards can be automatically measured. This program can save you a tremendous amount of time for the measurement.
+Pokemon cards have become very popular in recent years. A single card can cost thousands of dollars. One of the factors that affect a card's cost is its distance from the outer border to the inner border. Manually measuring it can be very time consuming. Using this program, Pokemon cards can be automatically measured. This program can save you a tremendous amount of time for the measurement. 
 
 ## Server user's manual
 
@@ -14,18 +14,18 @@ These are the commands you can use to control the program through a socket serve
 
 ## Sample inputs
 <p align="center">
-	<img src="sources/0217B001.jpg" width="128"/>
-	<img src="sources/0217B002.jpg" width="128"/>
-	<img src="sources/0217B003.jpg" width="128"/>
-	<img src="sources/0217B004.jpg" width="128"/>
-	<img src="sources/0217B005.jpg" width="128"/>
+	<img src="sources/0217B001 - Copy - Copy - Copy.jpg" width="128"/>
+	<img src="sources/0217B001.jpg.jpg" width="128"/>
+	<img src="sources/0217B002 - Copy - Copy - Copy.jpg" width="128"/>
+	<img src="sources/0217B001 - Copy - Copy.jpg.jpg" width="128"/>
+	<img src="sources/0217B001 - Copy.jpg" width="128"/>
 </p>
 
 ## Sample outputs
 <p align="center">
-	<img src="outputs/0217B001.jpg" width="128"/>
-	<img src="outputs/0217B002.jpg" width="128"/>
-	<img src="outputs/0217B003.jpg" width="128"/>
-	<img src="outputs/0217B004.jpg" width="128"/>
-	<img src="outputs/0217B005.jpg" width="128"/>
+	<img src="outputs (sample)/0217B001 - Copy - Copy - Copy.jpg" width="128"/>
+	<img src="outputs (sample)/0217B001.jpg" width="128"/>
+	<img src="outputs (sample)/0217B002 - Copy - Copy - Copy.jpg" width="128"/>
+	<img src="outputs (sample)/0217B001 - Copy - Copy.jpg" width="128"/>
+	<img src="outputs (sample)/0217B001 - Copy.jpg" width="128"/>
 </p>

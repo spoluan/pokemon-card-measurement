@@ -13,6 +13,48 @@ class CardDrawUtils(object):
     
     def __init__(self):
         self.rotationUtils = RotationUtils()
+        
+    def plot_card_corner_detection(self, image, 
+                                   outer_top_line, 
+                                   outer_bottom_line, 
+                                   outer_right_line, 
+                                   outer_left_line, 
+                                   inner_top_line, 
+                                   inner_bottom_line, 
+                                   inner_right_line, 
+                                   inner_left_line):
+        
+        bold_size = 1
+        
+        # Top left corner
+        tltl, tltr, tlbl, tlbr = (int(outer_left_line[0]), int(outer_top_line[1])), (int(inner_left_line[0], int(outer_top_line[1]))), (int(outer_left_line[0]), int(inner_top_line[1])), (int(inner_left_line[0]), int(inner_top_line[1]))
+        whiteFrame = cv2.line(image, tltl, tltr, (0, 253, 0), bold_size)
+        whiteFrame = cv2.line(whiteFrame, tltl, tlbl, (0, 253, 0), bold_size)
+        whiteFrame = cv2.line(whiteFrame, tlbl, tlbr, (0, 253, 0), bold_size)
+        whiteFrame = cv2.line(whiteFrame, tlbr, tltr, (0, 253, 0), bold_size)
+        
+        # Top right corner
+        trtl, trtr, trbl, trbr = (int(outer_right_line[0]), int(outer_top_line[1])), (int(inner_right_line[0], int(outer_top_line[1]))), (int(outer_right_line[0]), int(inner_top_line[1])), (int(inner_right_line[0]), int(inner_top_line[1]))
+        whiteFrame = cv2.line(whiteFrame, trtl, trtr, (0, 253, 0), bold_size)
+        whiteFrame = cv2.line(whiteFrame, trtl, trbl, (0, 253, 0), bold_size)
+        whiteFrame = cv2.line(whiteFrame, trbl, trbr, (0, 253, 0), bold_size)
+        whiteFrame = cv2.line(whiteFrame, trbr, trtr, (0, 253, 0), bold_size)
+        
+        # Bottom left corner
+        bltl, bltr, blbl, blbr = (int(outer_left_line[0]), int(outer_bottom_line[1])), (int(inner_left_line[0], int(outer_bottom_line[1]))), (int(outer_left_line[0]), int(inner_bottom_line[1])), (int(inner_left_line[0]), int(inner_bottom_line[1]))
+        whiteFrame = cv2.line(whiteFrame, bltl, bltr, (0, 253, 0), bold_size)
+        whiteFrame = cv2.line(whiteFrame, bltr, blbl, (0, 253, 0), bold_size)
+        whiteFrame = cv2.line(whiteFrame, blbl, blbr, (0, 253, 0), bold_size)
+        whiteFrame = cv2.line(whiteFrame, blbr, bltr, (0, 253, 0), bold_size)
+        
+        # Bottom right corner
+        brtl, brtr, brbl, brbr = (int(outer_left_line[0]), int(outer_bottom_line[1])), (int(inner_right_line[0], int(outer_bottom_line[1]))), (int(outer_right_line[0]), int(inner_bottom_line[1])), (int(inner_right_line[0]), int(inner_bottom_line[1]))
+        whiteFrame = cv2.line(whiteFrame, brtl, brtr, (0, 253, 0), bold_size)
+        whiteFrame = cv2.line(whiteFrame, brtr, brbl, (0, 253, 0), bold_size)
+        whiteFrame = cv2.line(whiteFrame, brbl, brbr, (0, 253, 0), bold_size)
+        whiteFrame = cv2.line(whiteFrame, brbr, brtr, (0, 253, 0), bold_size)
+    
+        return whiteFrame
     
     def plot_detection(self, image, potrait_status, outer_top_line, outer_bottom_line, outer_right_line, outer_left_line, inter_top_line, inner_bottom_line, inner_right_line, inner_left_line, filename='', save_image=True):
          

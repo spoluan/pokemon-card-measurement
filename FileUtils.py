@@ -52,9 +52,9 @@ class FileUtils(object):
                     status = w.read().strip()
                 con = True
             except:
-                pass
-            
-            
+                pass 
+        
+        print('CURRENT STATUS: ', status)
         if status == 'FORCE STOP':
             return True
         else:

@@ -38,7 +38,7 @@ class CardServer(object):
                         rw.truncate()
                 used = True
             except Exception as err: 
-                print('ISSUES:', err) 
+                print('ISSUES (READ/WRITE):', err) 
                 
         return status
     
@@ -47,41 +47,48 @@ class CardServer(object):
         while not used:
             try:
                 with open(os.path.join(path, file), 'w') as w:  
+                    print('Write', contents)
                     w.write(contents) 
                 used = True
             except Exception as err: 
-                print('ISSUES:', err) 
+                print('ISSUES (WRITE):', err) 
                 
         return 'DONE'
     
     def start_app(self, main_path):
         try:
             cmd = f'python {os.path.join(main_path, "app.py")}' 
+            print('Run: ', cmd)
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
-            out, err = p.communicate()  
+            out, err = p.communicate()
             # output = p.stdout.readline() 
         except Exception as a:
-            print('ISSUES:', a)
+            print('ISSUES (START APP):', a)
              
-    def recv_data(self, c):  
+    def recv_data(self, c, addr, s):  
          
         while True:  
             
+            print('Now is listening command from', addr)
+            recv = ''
             try:
-                recv = c.recv(1024).decode() 
+                recv = c.recv(1024).decode()
             except Exception as a:
                 print('ISSUES:', a)
                 
             if recv != '': 
                 
+                print('Received', recv.strip())
                 if recv.strip() == 'RUN': 
                     print('RUN')
                     if not self.is_running:
                         a_thread = threading.Thread(target=self.start_app, args = (self.main_path, ))
                         a_thread.start()
+                        print('Send response: APP HAS STARTED')
                         c.send('APP HAS STARTED'.encode()) 
                         self.is_running = True
                     else:
+                        print('Send response: APP IS RUNNING')
                         c.send('APP IS RUNNING'.encode()) 
                     print('DONE')
                     
@@ -118,6 +125,8 @@ class CardServer(object):
                     if stop_server == 'DONE':
                         c.send('SERVER_STOPPED'.encode())   
                     print('DONE')
+                    
+                    s.close()
                     break
                 
                 else:
@@ -127,8 +136,10 @@ class CardServer(object):
                 time.sleep(1)
             
             else:  
-                break 
-          
+                break  
+            
+        print('Thread finish!')  
+        
     def start_server(self):
       
         s = socket.socket()        
@@ -140,19 +151,23 @@ class CardServer(object):
             
             print('>> WAITING FOR REQUEST')
             
-            s.listen(5)    
-            print ("SOCKET IS LISTENING ...")
+            s.listen(5)     
             
-            c, addr = s.accept() # Command: RUN, FORCE STOP, RESULTS, CURRENT   
-            print ('GOT A NEW CONNECTION FROM:', addr)
-            
-            # Create thread for data receiving
-            threading.Thread(target=self.recv_data, args=(c, )).start() 
+            try:
+                c, addr = s.accept() # Command: RUN, FORCE STOP, RESULTS, CURRENT   
+                print ('GOT A NEW CONNECTION FROM:', addr)
+                
+                # Create thread for data receiving
+                th = threading.Thread(target=self.recv_data, args=(c, addr, s, )).start()  
+            except:
+                print('Server is forced stop by the client!')
             
             if not self.is_stop_server: 
+                print('Continue')
                 continue  
             else:
                 c.close()
+                print('Server closed')
                 break 
 
 if __name__ == '__main__':

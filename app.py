@@ -6,7 +6,7 @@ Created on Tue Feb 22 11:29:59 2022
 """
 
 import os
-os.chdir("D:\\post\\pokemon-card-measurement")  
+# os.chdir("D:\\post\\pokemon-card-measurement")  
 import cv2    
 from FileUtils import FileUtils
 from RotationUtils import RotationUtils
@@ -101,14 +101,15 @@ class CardMeasurement(object):
             
             else:
                 print('Force closed')
-                break
+                break 
     
     def main(self):
         
         # Specify the path to save
-        addr = './Datasets/data-fix-detected' # ./sources' 
-        addr_to_save = './outputs'
-        results_path = './results' 
+        path = os.path.dirname(__file__)
+        addr = os.path.join(path, './Datasets/data-fixed-detected') # ./sources' 
+        addr_to_save = os.path.join(path, './outputs')
+        results_path = os.path.join(path, './results')
         img_paths = [x for x in os.listdir(addr)[:] if '' in x] 
         
         # Maintain the running status 

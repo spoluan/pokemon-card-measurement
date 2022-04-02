@@ -24,35 +24,37 @@ class CardDrawUtils(object):
                                    inner_right_line, 
                                    inner_left_line):
         
-        bold_size = 1
+        bold_size = 3
+        whiteFrame = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY) 
+        whiteFrame = cv2.cvtColor(whiteFrame, cv2.COLOR_GRAY2RGB) 
         
         # Top left corner
-        tltl, tltr, tlbl, tlbr = (int(outer_left_line[0]), int(outer_top_line[1])), (int(inner_left_line[0], int(outer_top_line[1]))), (int(outer_left_line[0]), int(inner_top_line[1])), (int(inner_left_line[0]), int(inner_top_line[1]))
-        whiteFrame = cv2.line(image, tltl, tltr, (0, 253, 0), bold_size)
+        tltl, tltr, tlbl, tlbr = (int(outer_left_line[0]), int(outer_top_line[1])), (int(inner_left_line[0]), int(outer_top_line[1])), (int(outer_left_line[0]), int(inner_top_line[1])), (int(inner_left_line[0]), int(inner_top_line[1]))
+        whiteFrame = cv2.line(whiteFrame, tltl, tltr, (0, 253, 0), bold_size)
         whiteFrame = cv2.line(whiteFrame, tltl, tlbl, (0, 253, 0), bold_size)
         whiteFrame = cv2.line(whiteFrame, tlbl, tlbr, (0, 253, 0), bold_size)
         whiteFrame = cv2.line(whiteFrame, tlbr, tltr, (0, 253, 0), bold_size)
         
         # Top right corner
-        trtl, trtr, trbl, trbr = (int(outer_right_line[0]), int(outer_top_line[1])), (int(inner_right_line[0], int(outer_top_line[1]))), (int(outer_right_line[0]), int(inner_top_line[1])), (int(inner_right_line[0]), int(inner_top_line[1]))
+        trtl, trtr, trbl, trbr = (int(outer_right_line[0]), int(outer_top_line[1])), (int(inner_right_line[0]), int(outer_top_line[1])), (int(outer_right_line[0]), int(inner_top_line[1])), (int(inner_right_line[0]), int(inner_top_line[1]))
         whiteFrame = cv2.line(whiteFrame, trtl, trtr, (0, 253, 0), bold_size)
         whiteFrame = cv2.line(whiteFrame, trtl, trbl, (0, 253, 0), bold_size)
         whiteFrame = cv2.line(whiteFrame, trbl, trbr, (0, 253, 0), bold_size)
         whiteFrame = cv2.line(whiteFrame, trbr, trtr, (0, 253, 0), bold_size)
         
         # Bottom left corner
-        bltl, bltr, blbl, blbr = (int(outer_left_line[0]), int(outer_bottom_line[1])), (int(inner_left_line[0], int(outer_bottom_line[1]))), (int(outer_left_line[0]), int(inner_bottom_line[1])), (int(inner_left_line[0]), int(inner_bottom_line[1]))
+        bltl, bltr, blbl, blbr = (int(outer_left_line[0]), int(inner_bottom_line[1])), (int(inner_left_line[0]), int(inner_bottom_line[1])), (int(outer_left_line[0]), int(outer_bottom_line[1])), (int(inner_left_line[0]), int(outer_bottom_line[1]))
         whiteFrame = cv2.line(whiteFrame, bltl, bltr, (0, 253, 0), bold_size)
-        whiteFrame = cv2.line(whiteFrame, bltr, blbl, (0, 253, 0), bold_size)
-        whiteFrame = cv2.line(whiteFrame, blbl, blbr, (0, 253, 0), bold_size)
-        whiteFrame = cv2.line(whiteFrame, blbr, bltr, (0, 253, 0), bold_size)
+        whiteFrame = cv2.line(whiteFrame, bltr, blbr, (0, 253, 0), bold_size)
+        whiteFrame = cv2.line(whiteFrame, blbr, blbl, (0, 253, 0), bold_size)
+        whiteFrame = cv2.line(whiteFrame, blbl, bltl, (0, 253, 0), bold_size)
         
         # Bottom right corner
-        brtl, brtr, brbl, brbr = (int(outer_left_line[0]), int(outer_bottom_line[1])), (int(inner_right_line[0], int(outer_bottom_line[1]))), (int(outer_right_line[0]), int(inner_bottom_line[1])), (int(inner_right_line[0]), int(inner_bottom_line[1]))
+        brtl, brtr, brbl, brbr = (int(outer_right_line[0]), int(inner_bottom_line[1])), (int(inner_right_line[0]), int(inner_bottom_line[1])), (int(outer_right_line[0]), int(outer_bottom_line[1])), (int(inner_right_line[0]), int(outer_bottom_line[1]))
         whiteFrame = cv2.line(whiteFrame, brtl, brtr, (0, 253, 0), bold_size)
-        whiteFrame = cv2.line(whiteFrame, brtr, brbl, (0, 253, 0), bold_size)
-        whiteFrame = cv2.line(whiteFrame, brbl, brbr, (0, 253, 0), bold_size)
-        whiteFrame = cv2.line(whiteFrame, brbr, brtr, (0, 253, 0), bold_size)
+        whiteFrame = cv2.line(whiteFrame, brtr, brbr, (0, 253, 0), bold_size)
+        whiteFrame = cv2.line(whiteFrame, brbr, brbl, (0, 253, 0), bold_size)
+        whiteFrame = cv2.line(whiteFrame, brbl, brtl, (0, 253, 0), bold_size)
     
         return whiteFrame
     
@@ -61,10 +63,10 @@ class CardDrawUtils(object):
         whiteFrame = image.copy() # 255 * np.ones(image.shape, np.uint8) 
         
         # Un-comment this for color output
-        is_color = False
-        if not is_color:
-            whiteFrame = cv2.cvtColor(whiteFrame, cv2.COLOR_RGB2GRAY) 
-            whiteFrame = cv2.cvtColor(whiteFrame, cv2.COLOR_GRAY2RGB) 
+        # is_color = False
+        # if not is_color:
+        #     whiteFrame = cv2.cvtColor(whiteFrame, cv2.COLOR_RGB2GRAY) 
+        #     whiteFrame = cv2.cvtColor(whiteFrame, cv2.COLOR_GRAY2RGB) 
         
         text_color = (208, 67, 35)
         font_size = 2

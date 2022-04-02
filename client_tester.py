@@ -30,7 +30,7 @@ s.connect((host_ip, port))
 print('Connected')
 
 print('Sending command ...')
-status = 'STOP SERVER\r' # RUN\r, FORCE STOP\r, RESULTS\r, CURRENT\r, STOP SERVER\r
+status = 'RUN\r' # RUN\r, FORCE STOP\r, RESULTS\r, CURRENT\r, STOP SERVER\r
   
 # For loop is made for the sake of testing only to check the robustness of the server
 for x in range(4):
@@ -40,6 +40,6 @@ for x in range(4):
     time.sleep(1)
 
 # Server can receive command without closing
-s.close() 
+# s.close() 
  
 

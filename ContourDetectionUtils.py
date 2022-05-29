@@ -45,6 +45,10 @@ class ContourDetectionUtils(object):
         # Image.fromarray(whiteFrame).convert('RGB').save(os.path.join(addr_to_save, f'{img_path.split(".")[0]}_out.jpg'))
    
         return cnts, hierarchy
+    
+    def get_corner_contour(self, image):
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        return cnts, hierarchy
 
     def get_contours_outer_vbeta(self, image):
         
@@ -82,7 +86,7 @@ class ContourDetectionUtils(object):
         # whiteFrame = cv2.drawContours(whiteFrame, cnts, -1, (0, 0, 0), -1)  
         # Image.fromarray(whiteFrame).convert('RGB').save(os.path.join(addr_to_save, f'{img_path.split(".")[0]}_out.jpg'))
    
-        return cnts, hierarchy
+        return cnts, hierarchy, CC
     
     
     # Use for extracting the coordinate of the outermost

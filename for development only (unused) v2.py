@@ -19,7 +19,7 @@ from LineUtils import LineUtils
 from CardRemovalUtils import CardRemovalUtils
 from CardDrawUtils import CardDrawUtils
 
-def draw(image=None, is_cnt=False, cnts=[], coordinates=[]):
+def draw(image=None, is_cnt=False, cnts=[], coordinates=[], thickness=5):
     if is_cnt:
         whiteFrame = []
         if type(cnts) != dict:
@@ -37,7 +37,7 @@ def draw(image=None, is_cnt=False, cnts=[], coordinates=[]):
     else:
         for coordinate in coordinates:
             xy = list(map(lambda x: int(x), coordinate)) 
-            image = cv2.circle(image, xy, radius=8, color=(232, 54, 39), thickness=5)
+            image = cv2.circle(image, xy, radius=8, color=(232, 54, 39), thickness=thickness)
         return image
      
 
@@ -48,9 +48,9 @@ lineUtils = LineUtils()
 cardRemovalUtils = CardRemovalUtils()
 cardDrawUtils = CardDrawUtils() 
 
-addr = './Datasets/data' 
+addr = './Datasets/data-fixed-detected' 
 addr_to_save = './outputs' 
-img_path = 'normal_4.jpg'
+img_path = 'pokemon_B1.jpg'
 
 image = cv2.imread(os.path.join(addr, img_path), 1)
 rgb = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
@@ -89,6 +89,69 @@ rgb = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
 rgb = cv2.cvtColor(rgb, cv2.COLOR_GRAY2RGB)
 image_with_point = draw(image=rgb, is_cnt=False, coordinates=[top_center_coordinate, bottom_center_coordinate, right_center_coordinate, left_center_coordinate, top_line, bottom_line, right_line, left_line, central])
 cv2.imwrite(os.path.join(addr_to_save, img_path), image_with_point) 
+
+# Get corners
+outer_top_line, outer_bottom_line, outer_right_line, outer_left_line = \
+            [top_center_coordinate[0], top_line[1]], \
+            [bottom_center_coordinate[0], bottom_line[1]], \
+            [right_line[0], right_center_coordinate[1]], \
+            [left_line[0], left_center_coordinate[1]]
+inner_top_line, inner_bottom_line, inner_right_line, inner_left_line = \
+            top_center_coordinate, bottom_center_coordinate, right_center_coordinate, left_center_coordinate
+_, corners = cardDrawUtils.plot_card_corner_detection(image, outer_top_line, outer_bottom_line, outer_right_line, outer_left_line, inner_top_line, inner_bottom_line, inner_right_line, inner_left_line)
+top_left_corner, top_right_corner, bottom_left_corner, bottom_right_corner = corners
+
+get_left_corner = image[top_left_corner[0][1]:top_left_corner[2][1], top_left_corner[0][0]:top_left_corner[1][0]]
+
+# image_with_corner = draw(image=image, is_cnt=False, coordinates=top_left_corner)
+# cv2.imwrite(os.path.join(addr_to_save, img_path), image_with_corner) 
+cv2.imwrite(os.path.join(addr_to_save, 'left_' + img_path), get_left_corner)  # y, x
+
+# Detect contour corner
+# img_cnt, _, x = contourDetectionUtils.get_contours_outer_vbeta(get_left_corner)
+# img = 255 * np.ones(get_left_corner.shape, np.uint8)
+# img = draw(image=img, is_cnt=False, coordinates=np.squeeze(img_cnt), thickness=1)
+# cv2.imwrite(os.path.join(addr_to_save, 'left_cnt_' + img_path), img)
+ 
+# Detect contour corner
+dst = cv2.Canny(get_left_corner, 50, 200, None, 3)
+# lines = cv2.HoughLinesP(dst, 1, np.pi / 180, 50, None, 50, 10) 
+cv2.imwrite(os.path.join(addr_to_save, 'left_cnt_dst_' + img_path), dst)
+ 
+
+# Filter outer line
+print(get_left_corner.shape[0]) 
+base_measument = [2, 0] * np.expand_dims(np.arange(0, get_left_corner.shape[0] // 2, 2), axis=0).T 
+hold = []
+for base in base_measument: 
+    for y in range(get_left_corner.shape[1]):
+        if dst[base[0]][y] > 0:
+            hold.append([base[0], y])
+            break
+    
+# Plot the results
+p = 255 * np.ones(get_left_corner.shape, np.uint8)     
+for x in hold:
+    mage = cv2.circle(p, x, radius=1, color=(232, 54, 39), thickness=1)
+cv2.imwrite(os.path.join(addr_to_save, 'left_cnt_dst_mage_res' + img_path), mage)
+
+# Compute curvatory
+# Apply code for an example
+x = np.array(hold)[:, 0]
+y = np.array(hold)[:, 1]
+comp_curv = ComputeCurvature()
+curvature = comp_curv.fit(x, y)
+
+# Plot the result
+theta_fit = np.linspace(-np.pi, np.pi, 180)
+x_fit = comp_curv.xc + comp_curv.r*np.cos(theta_fit)
+y_fit = comp_curv.yc + comp_curv.r*np.sin(theta_fit)
+plt.plot(x_fit, y_fit, 'k--', label='fit', lw=2)
+plt.plot(x, y, 'ro', label='data', ms=8, mec='b', mew=1)
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('curvature = {:.3e}'.format(curvature))
+plt.show()
 
 # whiteFrame = 255 * np.ones(image.shape, np.uint8)
 # for x in sorted(one_right.keys()):

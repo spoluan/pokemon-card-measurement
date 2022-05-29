@@ -14,6 +14,7 @@ from ContourDetectionUtils import ContourDetectionUtils
 from LineUtils import LineUtils
 from CardRemovalUtils import CardRemovalUtils
 from CardDrawUtils import CardDrawUtils
+from CornerMeasurement import CornerMeasurement
  
 class CardMeasurement(object):
     
@@ -25,6 +26,7 @@ class CardMeasurement(object):
         self.lineUtils = LineUtils()
         self.cardRemovalUtils = CardRemovalUtils()
         self.cardDrawUtils = CardDrawUtils()
+        self.cornerMeasurement = CornerMeasurement()
     
     def image_segmentation_backside_pokemon_card(self, image, img_path): 
           
@@ -36,7 +38,7 @@ class CardMeasurement(object):
         
         img = image.copy()
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR) 
+        image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
         
         # Get the outer line of the card 
         cnts, top, bottom, right, left, \
@@ -90,12 +92,17 @@ class CardMeasurement(object):
                     if card_model == 'backside_pokemon_card':
                         image, potrait_status, outer_top_line, outer_bottom_line, outer_right_line, outer_left_line, inter_top_line, inner_bottom_line, inner_right_line, inner_left_line = self.image_segmentation_backside_pokemon_card(image, img_path)
                     
-                    # Draw cornering
-                    image = self.cardDrawUtils.plot_card_corner_detection(image, outer_top_line, outer_bottom_line, outer_right_line, outer_left_line, inter_top_line, inner_bottom_line, inner_right_line, inner_left_line)
+                    # Draw cornering corners = [top_left_corner, top_right_corner, bottom_left_corner, bottom_right_corner]
+                    image_with_corner, corners = self.cardDrawUtils.plot_card_corner_detection(image, outer_top_line, outer_bottom_line, outer_right_line, outer_left_line, inter_top_line, inner_bottom_line, inner_right_line, inner_left_line)
                     
+                    # Compute the cornering
+                    curvatories = self.cornerMeasurement.extract_corner(image, corners) 
+                    curvaturs = self.cornerMeasurement.get_curvatories(curvatories)
+                    curvature_top_left_corner, curvature_top_right_corner, curvature_bottom_left_corner, curvature_bottom_right_corner = curvaturs
+ 
                     # Draw the measurement
-                    top_dis, bottom_dis, right_dis, left_dis = self.cardDrawUtils.plot_detection(image, potrait_status, outer_top_line, outer_bottom_line, outer_right_line, outer_left_line, inter_top_line, inner_bottom_line, inner_right_line, inner_left_line, filename=os.path.join(addr_to_save, img_path), save_image=True)
-                    self.fileUtils.write_results([img_path, top_dis, bottom_dis, right_dis, left_dis], results_path, write_status='a+')
+                    top_dis, bottom_dis, right_dis, left_dis = self.cardDrawUtils.plot_detection(image_with_corner, potrait_status, outer_top_line, outer_bottom_line, outer_right_line, outer_left_line, inter_top_line, inner_bottom_line, inner_right_line, inner_left_line, curvaturs, filename=os.path.join(addr_to_save, img_path), save_image=True)
+                    self.fileUtils.write_results([img_path, top_dis, bottom_dis, right_dis, left_dis, curvature_top_left_corner, curvature_top_right_corner, curvature_bottom_left_corner, curvature_bottom_right_corner], results_path, write_status='a+')
                 except Exception as a:
                     print(a)
                     self.fileUtils.write_results([img_path], results_path, skipped=True, write_status='a+')
@@ -114,7 +121,7 @@ class CardMeasurement(object):
         addr = os.path.join(path, './Datasets/data-fixed-detected') # ./sources' 
         addr_to_save = os.path.join(path, './outputs')
         results_path = os.path.join(path, './results')
-        img_paths = [x for x in os.listdir(addr)[:] if '' in x] 
+        img_paths = [x for x in os.listdir(addr)[:] if '0401001' in x] 
         
         # Maintain the running status 
         self.fileUtils.update_information(results_path, 'running_status.txt', 'RUNNING')

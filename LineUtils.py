@@ -172,7 +172,7 @@ class LineUtils(object):
         
         if not is_binary:
             print('Extract the outer line of the card')
-            cnts, hierarchy = self.contourDetectionUtils.get_contours_outer_vbeta(image) # get_contour_full_border(img) # 
+            cnts, hierarchy, _ = self.contourDetectionUtils.get_contours_outer_vbeta(image) # get_contour_full_border(img) # 
         else:
             print('Extract the inner lines of the card')
             gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY) 

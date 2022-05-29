@@ -44,27 +44,27 @@ class CornerMeasurement(object):
         curve_filter_bottom_right_corner = self.get_curve_line(edge_filter_bottom_right_corner, top=False)
         
         # PLOT THE RESULTS
-        img_curve_curve_top_left_corner = self.plot_filtered_line(edge_filter_top_left_corner, curve_filter_top_left_corner)
-        img_curve_filter_top_right_corner = self.plot_filtered_line(edge_filter_top_right_corner, curve_filter_top_right_corner)
-        img_curve_filter_bottom_left_corner = self.plot_filtered_line(edge_filter_bottom_left_corner, curve_filter_bottom_left_corner)
-        img_curve_filter_bottom_right_corner= self.plot_filtered_line(edge_filter_bottom_right_corner, curve_filter_bottom_right_corner)
+        # img_curve_curve_top_left_corner = self.plot_filtered_line(edge_filter_top_left_corner, curve_filter_top_left_corner)
+        # img_curve_filter_top_right_corner = self.plot_filtered_line(edge_filter_top_right_corner, curve_filter_top_right_corner)
+        # img_curve_filter_bottom_left_corner = self.plot_filtered_line(edge_filter_bottom_left_corner, curve_filter_bottom_left_corner)
+        # img_curve_filter_bottom_right_corner= self.plot_filtered_line(edge_filter_bottom_right_corner, curve_filter_bottom_right_corner)
         
         # PLOT ALL THE RESULS
-        data = [
-                  filter_top_left_corner,
-                  filter_top_right_corner,
-                  filter_bottom_left_corner,
-                  filter_bottom_right_corner,
-                      edge_filter_top_left_corner,
-                      edge_filter_top_right_corner,
-                      edge_filter_bottom_left_corner,
-                      edge_filter_bottom_right_corner,
-                          img_curve_curve_top_left_corner,
-                          img_curve_filter_top_right_corner,
-                          img_curve_filter_bottom_left_corner,
-                          img_curve_filter_bottom_right_corner
-            ]
-        self.plots(*data)
+        # data = [
+        #           filter_top_left_corner,
+        #           filter_top_right_corner,
+        #           filter_bottom_left_corner,
+        #           filter_bottom_right_corner,
+        #               edge_filter_top_left_corner,
+        #               edge_filter_top_right_corner,
+        #               edge_filter_bottom_left_corner,
+        #               edge_filter_bottom_right_corner,
+        #                   img_curve_curve_top_left_corner,
+        #                   img_curve_filter_top_right_corner,
+        #                   img_curve_filter_bottom_left_corner,
+        #                   img_curve_filter_bottom_right_corner
+        #     ]
+        # self.plots(*data)
 
         return [curve_filter_top_left_corner, curve_filter_top_right_corner, 
                     curve_filter_bottom_left_corner, curve_filter_bottom_right_corner]
@@ -145,41 +145,41 @@ class CornerMeasurement(object):
         curvature_bottom_right_corner = self.computeCurvature_bottom_right_corner.fit(np.array(curve_filter_bottom_right_corner)[:, 0], np.array(curve_filter_bottom_right_corner)[:, 1])
         
         # GET CURVE PLOTTING VALUES
-        x_y_curvature_top_left_corner = self.computeCurvature_top_left_corner.get_curve_plotting_values(self.computeCurvature_top_left_corner)
-        x_y_curvature_top_right_corner = self.computeCurvature_top_right_corner.get_curve_plotting_values(self.computeCurvature_top_right_corner)
-        x_y_curvature_bottom_left_corner = self.computeCurvature_bottom_left_corner.get_curve_plotting_values(self.computeCurvature_bottom_left_corner)
-        x_y_curvature_bottom_right_corner = self.computeCurvature_bottom_right_corner.get_curve_plotting_values(self.computeCurvature_bottom_right_corner)
+        # x_y_curvature_top_left_corner = self.computeCurvature_top_left_corner.get_curve_plotting_values(self.computeCurvature_top_left_corner)
+        # x_y_curvature_top_right_corner = self.computeCurvature_top_right_corner.get_curve_plotting_values(self.computeCurvature_top_right_corner)
+        # x_y_curvature_bottom_left_corner = self.computeCurvature_bottom_left_corner.get_curve_plotting_values(self.computeCurvature_bottom_left_corner)
+        # x_y_curvature_bottom_right_corner = self.computeCurvature_bottom_right_corner.get_curve_plotting_values(self.computeCurvature_bottom_right_corner)
           
          
         # SAVE PLOTING
-        self.computeCurvature_top_left_corner.curve_plot(curvature_top_left_corner, 
-                                                         np.array(curve_filter_top_left_corner)[:, 0], 
-                                                         np.array(curve_filter_top_left_corner)[:, 1], 
-                                                         x_y_curvature_top_left_corner[0], 
-                                                         x_y_curvature_top_left_corner[1], 
-                                                         'filter_top_left_corner', 
-                                                         '1111')
-        self.computeCurvature_top_right_corner.curve_plot(curvature_top_right_corner, 
-                                                          np.array(curve_filter_top_right_corner)[:, 0], 
-                                                          np.array(curve_filter_top_right_corner)[:, 1], 
-                                                          x_y_curvature_top_right_corner[0], 
-                                                          x_y_curvature_top_right_corner[1], 
-                                                          'filter_top_right_corner', 
-                                                          '2222')
-        self.computeCurvature_bottom_left_corner.curve_plot(curvature_bottom_left_corner, 
-                                                          np.array(curve_filter_bottom_left_corner)[:, 0], 
-                                                          np.array(curve_filter_bottom_left_corner)[:, 1], 
-                                                          x_y_curvature_bottom_left_corner[0], 
-                                                          x_y_curvature_bottom_left_corner[1], 
-                                                          'filter_bottom_left_corner', 
-                                                          '3333')
-        self.computeCurvature_bottom_right_corner.curve_plot(curvature_bottom_right_corner, 
-                                                          np.array(curve_filter_bottom_right_corner)[:, 0], 
-                                                          np.array(curve_filter_bottom_right_corner)[:, 1], 
-                                                          x_y_curvature_bottom_right_corner[0], 
-                                                          x_y_curvature_bottom_right_corner[1], 
-                                                          'filter_bottom_right_corner', 
-                                                          '4444')
+        # self.computeCurvature_top_left_corner.curve_plot(curvature_top_left_corner, 
+        #                                                  np.array(curve_filter_top_left_corner)[:, 0], 
+        #                                                  np.array(curve_filter_top_left_corner)[:, 1], 
+        #                                                  x_y_curvature_top_left_corner[0], 
+        #                                                  x_y_curvature_top_left_corner[1], 
+        #                                                  'filter_top_left_corner', 
+        #                                                  '1111')
+        # self.computeCurvature_top_right_corner.curve_plot(curvature_top_right_corner, 
+        #                                                   np.array(curve_filter_top_right_corner)[:, 0], 
+        #                                                   np.array(curve_filter_top_right_corner)[:, 1], 
+        #                                                   x_y_curvature_top_right_corner[0], 
+        #                                                   x_y_curvature_top_right_corner[1], 
+        #                                                   'filter_top_right_corner', 
+        #                                                   '2222')
+        # self.computeCurvature_bottom_left_corner.curve_plot(curvature_bottom_left_corner, 
+        #                                                   np.array(curve_filter_bottom_left_corner)[:, 0], 
+        #                                                   np.array(curve_filter_bottom_left_corner)[:, 1], 
+        #                                                   x_y_curvature_bottom_left_corner[0], 
+        #                                                   x_y_curvature_bottom_left_corner[1], 
+        #                                                   'filter_bottom_left_corner', 
+        #                                                   '3333')
+        # self.computeCurvature_bottom_right_corner.curve_plot(curvature_bottom_right_corner, 
+        #                                                   np.array(curve_filter_bottom_right_corner)[:, 0], 
+        #                                                   np.array(curve_filter_bottom_right_corner)[:, 1], 
+        #                                                   x_y_curvature_bottom_right_corner[0], 
+        #                                                   x_y_curvature_bottom_right_corner[1], 
+        #                                                   'filter_bottom_right_corner', 
+        #                                                   '4444')
 
         return [curvature_top_left_corner, curvature_top_right_corner,
                 curvature_bottom_left_corner, curvature_bottom_right_corner]

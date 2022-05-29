@@ -121,7 +121,7 @@ class CardMeasurement(object):
         addr = os.path.join(path, './Datasets/data-fixed-detected') # ./sources' 
         addr_to_save = os.path.join(path, './outputs')
         results_path = os.path.join(path, './results')
-        img_paths = [x for x in os.listdir(addr)[:] if '0401001' in x] 
+        img_paths = [x for x in os.listdir(addr)[:] if '' in x] 
         
         # Maintain the running status 
         self.fileUtils.update_information(results_path, 'running_status.txt', 'RUNNING')

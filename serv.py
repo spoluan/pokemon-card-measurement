@@ -40,7 +40,7 @@ class CardServer(object):
             except Exception as err: 
                 print('ISSUES (READ/WRITE):', err) 
                 
-        return status
+        return status 
     
     def write_information(self, path, file, contents=''):
         used = False 
@@ -110,12 +110,17 @@ class CardServer(object):
                     
                 elif recv.strip() == 'CURRENT':
                     print('>> CURRENT ...')
-                    current = self.read_write_information(self.results_path, 'current_process.txt', write=False).encode()
-                    if len(current.strip()) > 0:
-                        c.send(current)
+                    is_server_stop = self.read_write_information(self.results_path, 'running_status.txt', write=False).encode()
+                    if is_server_stop != 'STOP':
+                        current = self.read_write_information(self.results_path, 'current_process.txt', write=False).encode()
+                        if len(current.strip()) > 0:
+                            c.send(current)
+                        else:
+                            c.send(b'EMPTY')
+                        print('DONE')
                     else:
-                        c.send(b'EMPTY')
-                    print('DONE')
+                        c.send(b'STOP')
+                        print('DONE')
                     
                 elif recv.strip() == 'STOP SERVER': 
                     print('>> STOP SERVER ...') 

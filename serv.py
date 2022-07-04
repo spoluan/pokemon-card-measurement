@@ -61,7 +61,7 @@ class CardServer(object):
             print('Run: ', cmd)
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
             out, err = p.communicate()
-            # output = p.stdout.readline() 
+            output = p.stdout.readline()  
         except Exception as a:
             print('ISSUES (START APP):', a)
              
@@ -69,12 +69,14 @@ class CardServer(object):
          
         while True:  
             
-            print('Now is listening command from', addr)
+            print('Now is listening command from', addr, self.is_stop_server)
+
             recv = ''
             try:
                 recv = c.recv(1024).decode()
             except Exception as a:
                 print('ISSUES:', a)
+                self.is_stop_server = True 
                 
             if recv != '': 
                 
@@ -98,6 +100,9 @@ class CardServer(object):
                         c.send('DONE FORCE STOP'.encode()) 
                     print('DONE')
                     self.is_running = False
+                    self.is_stop_server = True
+
+                    s.close()
                     
                 elif recv.strip() == 'RESULTS':
                     print('>> RESULTS ...')
@@ -167,6 +172,7 @@ class CardServer(object):
             except:
                 print('Server is forced stop by the client!')
             
+            print('SERVER STATUS', self.is_stop_server)
             if not self.is_stop_server: 
                 print('Continue')
                 continue  

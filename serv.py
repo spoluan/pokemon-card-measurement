@@ -10,9 +10,10 @@ import os
 import subprocess       
 import threading # thread6 
 import time 
+import os 
 
-class CardServer(object):
-    
+class CardServer(object): 
+
     def __init__(self):
         
         abs_path = os.path.dirname(__file__)
@@ -64,11 +65,18 @@ class CardServer(object):
             output = p.stdout.readline()  
         except Exception as a:
             print('ISSUES (START APP):', a)
+            os._exit(0)
+
+        print('START APP FINISH')
              
     def recv_data(self, c, addr, s):  
          
         while True:  
             
+            if self.is_stop_server:
+                s.close()
+                break
+
             print('Now is listening command from', addr, self.is_stop_server)
 
             recv = ''
@@ -92,15 +100,16 @@ class CardServer(object):
                     else:
                         print('Send response: APP IS RUNNING')
                         c.send('APP IS RUNNING'.encode()) 
-                    print('DONE')
+                    print('DONE RUN')
                     
                 elif recv.strip() == 'FORCE STOP':
                     print('>> FORCE STOP ...')
                     if self.write_information(self.results_path, 'running_status.txt', contents='FORCE STOP') == 'DONE':
                         c.send('DONE FORCE STOP'.encode()) 
+
                     print('DONE')
                     self.is_running = False
-                    self.is_stop_server = True
+                    self.is_stop_server = True 
 
                     s.close()
                     
@@ -144,7 +153,8 @@ class CardServer(object):
                     print('>> UNKNOWN COMMAND ...') 
                 
                 time.sleep(1)
-            
+
+                print('DONE ALL')
             else:  
                 break  
             
@@ -177,9 +187,11 @@ class CardServer(object):
                 print('Continue')
                 continue  
             else:
-                c.close()
+                s.close()
                 print('Server closed')
                 break 
+
+        print('DONE SERVER')
 
 if __name__ == '__main__':
     app = CardServer()

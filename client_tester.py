@@ -49,6 +49,15 @@ for x in range(1):
     print(rec)
     time.sleep(1)
     
+status = 'RESULTS\r' # RUN\r, FORCE STOP\r, RESULTS\r, CURRENT\r, STOP SERVER\r
+  
+# For loop is made for the sake of testing only to check the robustness of the server
+for x in range(1):
+    s.send(status.encode())
+    rec = s.recv(1024).decode()
+    print(rec)
+    time.sleep(1)
+    
     
 status = 'FORCE STOP\r' # RUN\r, FORCE STOP\r, RESULTS\r, CURRENT\r, STOP SERVER\r
   

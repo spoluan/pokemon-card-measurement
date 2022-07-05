@@ -15,6 +15,7 @@ from LineUtils import LineUtils
 from CardRemovalUtils import CardRemovalUtils
 from CardDrawUtils import CardDrawUtils
 from CornerMeasurement import CornerMeasurement
+from ClientSocket import Client
  
 class CardMeasurement(object):
     
@@ -27,6 +28,7 @@ class CardMeasurement(object):
         self.cardRemovalUtils = CardRemovalUtils()
         self.cardDrawUtils = CardDrawUtils()
         self.cornerMeasurement = CornerMeasurement()
+        self.client = Client()
     
     def image_segmentation_backside_pokemon_card(self, image, img_path): 
           
@@ -137,6 +139,13 @@ class CardMeasurement(object):
         # Maintain the running status 
         self.fileUtils.update_information(results_path, 'running_status.txt', 'STOP')
         self.fileUtils.update_information(results_path, 'current_process.txt', '')
+
+        # STOP THE PROGRAM AND SERVER WHEN ALL IS FINISHED
+        try:
+            self.client.connect()
+            self.client.force_stop() 
+        except:
+            pass 
     
 if __name__ == '__main__':
     app = CardMeasurement()

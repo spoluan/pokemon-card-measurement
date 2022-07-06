@@ -163,16 +163,32 @@ class CardServer(object):
 
     def real_time_notification(self, c, addr, s):
         current_temp = ''
+        final_card = ''
         while not self.is_stop_server: 
 
             current = self.read_write_information(self.results_path, 'current_process.txt', write=False) 
             if current != current_temp.strip():
                 current_temp = current 
+                try:
+                    s = list(map(lambda x: int(x), current.split('>')[1].split("from")))
+                    print(s)
+                    if(s[0] == s[1]):
+                        final_card = current.split('>')[0]
+                        print('FINAL CARD', final_card)
+                except:
+                    print('Error')
                 c.send(f'CURRENT + {current}' . encode()) 
 
             results = self.read_write_information(self.results_path, 'results.txt', write=True)
+
             if len(results.strip()) > 0:
-                c.send(f'RESULT + {results}' . encode())  
+                # print('CHECK FINAL', final_card.strip(), 'ADOH', results.strip(), final_card.split('.'), str(results.strip()).split('.'), final_card.split('.') == str(results.strip()).split('.'))
+
+                print(final_card.split('.')[0], str(results.strip()).split('.')[0], final_card.split('.')[0] == str(results.strip()).split('.')[0])
+                if final_card.split('.')[0] in str(results.strip()).split('.')[0]:
+                    c.send(f'RESULT + {results} + STOP' . encode())  
+                else:    
+                    c.send(f'RESULT + {results}' . encode())  
             
             time.sleep(1)
         

@@ -40,3 +40,11 @@ class Client(object):
         rec = self.s.recv(1024).decode()
         print(rec)
         time.sleep(1)
+
+    def send_stop(self):
+        time.sleep(3)
+        status = 'SEND_STOP\r'
+        self.s.send(status.encode())
+        rec = self.s.recv(1024).decode()
+        print(rec)
+        time.sleep(1)

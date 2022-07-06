@@ -85,7 +85,9 @@ class CardMeasurement(object):
                 # Maintain the running status 
                 print(f'#### Processing image {img_path} {count} from {len(img_paths)}') 
                 self.fileUtils.update_information(results_path, 'current_process.txt', f'{img_path} > {count + 1} from {len(img_paths)}')
-                 
+                
+                time.sleep(2)
+
                 # Load the image,  
                 image = cv2.imread(os.path.join(addr, img_path), 1) # 0 | 1 = GRAY | RGB
                  
@@ -125,7 +127,9 @@ class CardMeasurement(object):
         addr = os.path.join(path, './Datasets/data-fixed-detected') # ./sources' 
         addr_to_save = os.path.join(path, './outputs')
         results_path = os.path.join(path, './results')
-        img_paths = [x for x in os.listdir(addr)[:] if '' in x] 
+        img_paths = [x for x in os.listdir(addr)[:] if '' in x]   
+
+        print('IMAGE PATH TO DETECT', img_paths)
 
         # First run set default
         self.fileUtils.update_information(results_path, 'current_process.txt', '')  
@@ -150,6 +154,8 @@ class CardMeasurement(object):
         try:
             time.sleep(5)
             self.client.connect()
+            self.client.send_stop()
+            time.sleep(5)
             self.client.force_stop() 
         except:
             pass 

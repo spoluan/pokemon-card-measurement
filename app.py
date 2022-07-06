@@ -83,7 +83,7 @@ class CardMeasurement(object):
                 
                 # Maintain the running status 
                 print(f'#### Processing image {img_path} {count} from {len(img_paths)}') 
-                self.fileUtils.update_information(results_path, 'current_process.txt', f'{img_path} > {count} from {len(img_paths)}')
+                self.fileUtils.update_information(results_path, 'current_process.txt', f'{img_path} > {count + 1} from {len(img_paths)}')
                  
                 # Load the image,  
                 image = cv2.imread(os.path.join(addr, img_path), 1) # 0 | 1 = GRAY | RGB
@@ -117,6 +117,7 @@ class CardMeasurement(object):
                 break 
     
     def main(self):
+
         
         # Specify the path to save
         path = os.path.dirname(__file__)
@@ -124,6 +125,10 @@ class CardMeasurement(object):
         addr_to_save = os.path.join(path, './outputs')
         results_path = os.path.join(path, './results')
         img_paths = [x for x in os.listdir(addr)[:] if '' in x] 
+
+        # First run set default
+        self.fileUtils.update_information(results_path, 'current_process.txt', '')  
+        self.fileUtils.update_information(results_path, 'results.txt', '') 
         
         # Maintain the running status 
         self.fileUtils.update_information(results_path, 'running_status.txt', 'RUNNING')

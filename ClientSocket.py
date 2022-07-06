@@ -40,4 +40,3 @@ class Client(object):
         rec = self.s.recv(1024).decode()
         print(rec)
         time.sleep(1)
-        

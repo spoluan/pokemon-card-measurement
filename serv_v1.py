@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Jul  6 11:16:39 2022
+Created on Mon Mar  7 15:20:39 2022
 
 @author: Sevendi Eldrige Rifki Poluan
 """ 
@@ -160,21 +160,6 @@ class CardServer(object):
                 break  
             
         print('Thread finish!')  
-
-    def real_time_notification(self, c, addr, s):
-        current_temp = ''
-        while not self.is_stop_server: 
-
-            current = self.read_write_information(self.results_path, 'current_process.txt', write=False) 
-            if current != current_temp.strip():
-                current_temp = current 
-                c.send(f'CURRENT + {current}' . encode()) 
-
-            results = self.read_write_information(self.results_path, 'results.txt', write=True)
-            if len(results.strip()) > 0:
-                c.send(f'RESULT + {results}' . encode())  
-            
-            time.sleep(1)
         
     def start_server(self):
       
@@ -196,9 +181,7 @@ class CardServer(object):
                 self.connected_client.append(c)
                 
                 # Create thread for data receiving
-                threading.Thread(target=self.recv_data, args=(c, addr, s, )).start()  
-
-                threading.Thread(target=self.real_time_notification, args=(c, addr, s, )).start()  
+                th = threading.Thread(target=self.recv_data, args=(c, addr, s, )).start()  
  
             except:
                 print('Server is forced stop by the client!')

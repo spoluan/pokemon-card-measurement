@@ -16,6 +16,7 @@ from CardRemovalUtils import CardRemovalUtils
 from CardDrawUtils import CardDrawUtils
 from CornerMeasurement import CornerMeasurement
 from ClientSocket import Client
+import time
  
 class CardMeasurement(object):
     
@@ -147,6 +148,7 @@ class CardMeasurement(object):
 
         # STOP THE PROGRAM AND SERVER WHEN ALL IS FINISHED
         try:
+            time.sleep(5)
             self.client.connect()
             self.client.force_stop() 
         except:

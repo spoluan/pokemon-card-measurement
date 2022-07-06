@@ -40,6 +40,13 @@ for x in range(1):
     print(rec)
     time.sleep(1)
     
+    
+while True:
+    rec = s.recv(1024).decode()
+    print(rec)
+    time.sleep(1)
+
+    
 status = 'CURRENT\r' # RUN\r, FORCE STOP\r, RESULTS\r, CURRENT\r, STOP SERVER\r
   
 # For loop is made for the sake of testing only to check the robustness of the server

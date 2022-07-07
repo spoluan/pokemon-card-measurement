@@ -152,10 +152,9 @@ class CardMeasurement(object):
 
         # STOP THE PROGRAM AND SERVER WHEN ALL IS FINISHED
         try:
-            time.sleep(5)
-            self.client.connect()
-            self.client.send_stop()
-            time.sleep(5)
+            self.client.connect() 
+            time.sleep(10)
+            self.client.send_stop() 
             self.client.force_stop() 
         except:
             pass 

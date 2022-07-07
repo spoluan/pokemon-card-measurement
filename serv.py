@@ -184,15 +184,12 @@ class CardServer(object):
                     counter += 1
                 except:
                     print('Error')
-                c.send(f'CURRENT + {current}' . encode()) 
+                if len(current.strip()) > 0:
+                    c.send(f'CURRENT + {current}' . encode()) 
 
-            results = self.read_write_information(self.results_path, 'results.txt', write=True)
-
-            if len(results.strip()) > 0: 
-                if final_card.split('.')[0] == str(results.strip()).split('.')[0]: 
-                    c.send(f'RESULT + {results} + STOP' . encode())  
-                else:    
-                    c.send(f'RESULT + {results}' . encode())
+            results = self.read_write_information(self.results_path, 'results.txt', write=True)  
+            if len(results.strip()) > 0:  
+                c.send(f'RESULT + {results}' . encode())
               
         
     def start_server(self):

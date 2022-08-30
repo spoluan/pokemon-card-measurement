@@ -118,7 +118,7 @@ class CardMeasurement(object):
         
         # Specify the path to save
         path = os.path.dirname(__file__)
-        addr = os.path.join(path, './Datasets/data-fixed-detected') # ./sources' 
+        addr = os.path.join(path, './Datasets/cards_dec') # ./sources' 
         addr_to_save = os.path.join(path, './outputs')
         results_path = os.path.join(path, './results')
         img_paths = [x for x in os.listdir(addr)[:] if '' in x] 

@@ -7,7 +7,7 @@ Created on Mon Mar 28 23:12:52 2022
 """
 
 import os
-os.chdir("D:\\post\\pokemon-card-measurement")  
+# os.chdir("D:\\post\\pokemon-card-measurement")  
 import cv2    
 import numpy as np
 import pandas as pd
@@ -24,8 +24,7 @@ def draw(image=None, is_cnt=False, cnts=[], coordinates=[], thickness=5):
         whiteFrame = []
         if type(cnts) != dict:
             whiteFrame = 255 * np.ones(image.shape, np.uint8)
-            try:
-                
+            try: 
                 whiteFrame = cv2.drawContours(whiteFrame, cnts, -1, (0, 0, 0), -1)
             except:
                 whiteFrame = cv2.drawContours(whiteFrame, np.expand_dims(np.array(cnts[1], dtype=np.int32), axis=0), -1, (0, 0, 0), -1)
@@ -48,9 +47,9 @@ lineUtils = LineUtils()
 cardRemovalUtils = CardRemovalUtils()
 cardDrawUtils = CardDrawUtils() 
 
-addr = './Datasets/data-fixed-detected' 
+addr = './Datasets/cards_dec' 
 addr_to_save = './outputs' 
-img_path = 'pokemon_B1.jpg'
+img_path = 'vmax_043.jpg'
 
 image = cv2.imread(os.path.join(addr, img_path), 1)
 rgb = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)

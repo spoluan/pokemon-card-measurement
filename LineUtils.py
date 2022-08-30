@@ -187,13 +187,14 @@ class LineUtils(object):
         # Get vertical line of the card border contour
         all_ver, ver_lines = self.get_horizontal_and_vertical_lines(cnts, idx=0, img_dim=img_dim) # 0 indicates x axis
         two_left, one_right = self.get_coordinate_to_measure(ver_lines, central, status='VERTICAL_MEASUREMENT')
+     
          
         print('Get the highest number of points')
         IND = -1 #  Default
         INDS = np.arange(-150, 0, 1)[::-1]
         top = np.array(one_top[sorted(one_top.keys())[IND]][1], dtype=np.int32)
         bottom = np.array(two_bottom[sorted(two_bottom.keys())[IND]][1], dtype=np.int32)
-        right = np.array(one_right[sorted(one_right.keys())[IND]][1], dtype=np.int32)
+        right = np.array(one_right[sorted(one_right.keys())[IND]][1], dtype=np.int32) 
         left = np.array(two_left[sorted(two_left.keys())[IND]][1], dtype=np.int32) 
         
         print('Length', len(sorted(one_top.keys())), len(sorted(two_bottom.keys())), len(sorted(one_right.keys())), len(sorted(two_left.keys())))
@@ -288,12 +289,12 @@ class LineUtils(object):
         bottom_ = [int(np.average(np.squeeze(bottom)[:, 0])), int(np.average(np.squeeze(bottom)[:, 1]))]
         right_ = [int(np.average(np.squeeze(right)[:, 0])), int(np.average(np.squeeze(right)[:, 1]))]
         left_ = [int(np.average(np.squeeze(left)[:, 0])), int(np.average(np.squeeze(left)[:, 1]))]
-         
+          
         top_to_center = get_coordinate_distance(central, top_, top_bottom=True)
         bottom_to_center = get_coordinate_distance(central, bottom_, top_bottom=True)
         right_to_center = get_coordinate_distance(central, right_, top_bottom=False)
         left_to_center = get_coordinate_distance(central, left_, top_bottom=False)
-         
+          
         print('start', top_to_center, bottom_to_center, right_to_center, left_to_center)
          
         # Detect the outest for inner line detection
@@ -404,28 +405,23 @@ class LineUtils(object):
                 normal_top_distance_to_center = [0, 0]
                 normal_bottom_distance_to_center = [0, 0]
                 
-                normal_right_distance_to_center_inner = [0, 1200]
-                normal_left_distance_to_center_inner = [0, 1200]
-                normal_top_distance_to_center_inner = [0, 1200]
-                normal_bottom_distance_to_center_inner = [0, 1200]
+                normal_right_distance_to_center_inner = [780, 1200]
+                normal_left_distance_to_center_inner = [780, 846]
+                normal_top_distance_to_center_inner = [1170, 1200]
+                normal_bottom_distance_to_center_inner = [1170, 1200]
                 
-            # elif 'vcard_' in card_type.lower():
-            #     # print('VCARD')
-            #     # normal_right_left_distance_to_center = [31.58, 32.0] 
-            #     # normal_top_bottom_distance_to_center = [40.42, 44.45]  
+            elif 'vcard_' in card_type.lower():
+                print('VCARD')
+                normal_right_distance_to_center = [0, 0]
+                normal_left_distance_to_center = [0, 0]
+                normal_top_distance_to_center = [0, 0]
+                normal_bottom_distance_to_center = [0, 0]
                 
-            #     # normal_right_left_distance_to_center_inner = [31.58, 32.0] 
-            #     # normal_top_bottom_distance_to_center_inner = [40.42, 44.45]
+                normal_right_distance_to_center_inner = [830, 836]
+                normal_left_distance_to_center_inner = [827, 835]
+                normal_top_distance_to_center_inner = [1170, 1185]
+                normal_bottom_distance_to_center_inner = [1170, 1178] 
                 
-            #     normal_right_distance_to_center = [905, 907]
-            #     normal_left_distance_to_center = [908, 910]
-            #     normal_top_distance_to_center = [1239, 1243]
-            #     normal_bottom_distance_to_center = [1234, 1237]
-                
-            #     normal_right_distance_to_center_inner = [826, 833]
-            #     normal_left_distance_to_center_inner = [826, 833]
-            #     normal_top_distance_to_center_inner = [1168, 1175]
-            #     normal_bottom_distance_to_center_inner = [1179, 1184]
             elif 'vstar_' in card_type.lower():
                 print('VSTAR')
                 # normal_right_left_distance_to_center = [31.58, 32.0] 
@@ -494,6 +490,7 @@ class LineUtils(object):
                 top, c_top, c_top_max, top_max = get_value(top, one_top, top_max, c_top, normal_top_distance_to_center_inner, c_top_max, top_bottom=True, show_log=False, get_last_index=False) # No top measurement for vmax
                 bottom, c_bottom, c_bottom_max, bottom_max = get_value(bottom, two_bottom, bottom_max, c_bottom, normal_bottom_distance_to_center_inner, c_bottom_max, top_bottom=True, show_log=False, get_last_index=False)
                 if 'vmax_' in card_type.lower():
+                    print('Vmax active')
                     right, c_right, c_right_max, right_max = get_value(right, one_right, right_max, c_right, normal_right_distance_to_center_inner, c_right_max, top_bottom=False, show_log=False, get_last_index=False)
                     left, c_left, c_left_max, left_max = get_value(left, two_left, left_max, c_left, normal_left_distance_to_center_inner, c_left_max, top_bottom=False, show_log=False, get_last_index=False, status='left')
                 else:
@@ -516,6 +513,9 @@ class LineUtils(object):
                 left, c_left, c_left_max, left_max = get_value(left, two_left, left_max, c_left, normal_left_distance_to_center, c_left_max, top_bottom=False, show_log=False, get_last_index=True, outer=False)
         except Exception as err:
             print('Passed!', err) 
+            
+             
+        print('Righ max', c_bottom, c_right, right_max)
         
         # If there is no update assign with the maximum value 
         if c_top == 0:
@@ -540,10 +540,12 @@ class LineUtils(object):
         
         print('Get the center of the line') 
         
-        top_center_coordinate = [int(np.average(np.squeeze(top)[:, 0])), int(np.average(np.squeeze(top)[:, 1]))]
-        bottom_center_coordinate = [int(np.average(np.squeeze(bottom)[:, 0])), int(np.average(np.squeeze(bottom)[:, 1]))]
-        right_center_coordinate = [int(np.average(np.squeeze(right)[:, 0])), int(np.average(np.squeeze(right)[:, 1]))]
-        left_center_coordinate = [int(np.average(np.squeeze(left)[:, 0])), int(np.average(np.squeeze(left)[:, 1]))]
+        top_center_coordinate = [int(np.average(np.squeeze(top)[:, 0])), int(np.average(np.squeeze(top)[:, 1]))] if len(top) > 0 else [0, 0]
+        bottom_center_coordinate = [int(np.average(np.squeeze(bottom)[:, 0])), int(np.average(np.squeeze(bottom)[:, 1]))]  if len(bottom) > 0 else [0, 0]
+        right_center_coordinate = [int(np.average(np.squeeze(right)[:, 0])), int(np.average(np.squeeze(right)[:, 1]))] if len(right) > 0 else [0, 0]
+        left_center_coordinate = [int(np.average(np.squeeze(left)[:, 0])), int(np.average(np.squeeze(left)[:, 1]))] if len(left) > 0 else [0, 0]
+        
+        print('wow')
         
         # update central
         new_central = [left_center_coordinate[0] + abs(right_center_coordinate[0] - left_center_coordinate[0]) // 2, top_center_coordinate[1] + abs(bottom_center_coordinate[1] - top_center_coordinate[1]) // 2]

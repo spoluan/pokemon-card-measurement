@@ -59,7 +59,7 @@ class ContourDetectionUtils(object):
         # addr_to_save = './outputs'
         # image = cv2.imread(os.path.join(addr, img_path), 1)
         
-        (lower, upper) = ([140, 140, 140], [255, 255, 255])
+        (lower, upper) = ([200, 0, 0], [255, 255, 255])
         # create NumPy arrays from the boundaries
         lower = np.array(lower, dtype = "uint8")
         upper = np.array(upper, dtype = "uint8")
@@ -68,7 +68,9 @@ class ContourDetectionUtils(object):
         mask = cv2.inRange(image, lower, upper) 
         # output = cv2.bitwise_and(img, img, mask = mask)
 
-        _, edged = cv2.threshold(mask, 160, 255, cv2.THRESH_BINARY_INV) # Best 175
+        _, edged = cv2.threshold(mask, 50, 255, cv2.THRESH_BINARY_INV) # Best 175
+        # cv2.imwrite(os.path.join(addr_to_save, img_path), edged)
+    
 
         cnts, hierarchy = cv2.findContours(edged.copy(),
                                            cv2.RETR_EXTERNAL,
@@ -85,7 +87,7 @@ class ContourDetectionUtils(object):
         whiteFrame = 255 * np.ones(image.shape, np.uint8) 
         # whiteFrame = cv2.drawContours(whiteFrame, cnts, -1, (0, 0, 0), -1)  
         # Image.fromarray(whiteFrame).convert('RGB').save(os.path.join(addr_to_save, f'{img_path.split(".")[0]}_out.jpg'))
-   
+      
         return cnts, hierarchy, CC
     
     
@@ -131,7 +133,7 @@ class ContourDetectionUtils(object):
         # whiteFrame = 255 * np.ones(threshed.shape, np.uint8)
         # whiteFrame = cv2.drawContours(whiteFrame, cnts, -1, (0, 0, 0), -1)  
         # cv2.imwrite(os.path.join(addr_to_save, img_path), whiteFrame)
-        return cnts, hierarchy
+        return cnts, hierarchy, None
     
     # Use for extracting the inner border line (option two)
     def get_countour_shadow_card(self, seg_img): 
@@ -237,7 +239,7 @@ class ContourDetectionUtils(object):
         mag = np.uint8(mag)
         
         # C = cv2.Canny(np.array(mag), 0, 180)
-        _, thresh = cv2.threshold(mag, 35, 255, cv2.THRESH_BINARY_INV)
+        _, thresh = cv2.threshold(mag, 25, 255, cv2.THRESH_BINARY_INV)
         gray = cv2.cvtColor(np.array(thresh), cv2.COLOR_RGB2GRAY) 
         
         # rgb = cv2.cvtColor(whiteFrame, cv2.COLOR_BGR2RGB)

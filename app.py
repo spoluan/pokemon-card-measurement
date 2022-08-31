@@ -15,6 +15,7 @@ from LineUtils import LineUtils
 from CardRemovalUtils import CardRemovalUtils
 from CardDrawUtils import CardDrawUtils
 from CornerMeasurement import CornerMeasurement
+
  
 class CardMeasurement(object):
     
@@ -68,6 +69,7 @@ class CardMeasurement(object):
             [bottom_center_coordinate[0], bottom_line[1]], \
             [right_line[0], right_center_coordinate[1]], \
             [left_line[0], left_center_coordinate[1]]
+         
         inner_top_line, inner_bottom_line, inner_right_line, inner_left_line = \
             top_center_coordinate, bottom_center_coordinate, right_center_coordinate, left_center_coordinate
         
@@ -96,8 +98,9 @@ class CardMeasurement(object):
                     image_with_corner, corners = self.cardDrawUtils.plot_card_corner_detection(image, outer_top_line, outer_bottom_line, outer_right_line, outer_left_line, inter_top_line, inner_bottom_line, inner_right_line, inner_left_line)
                     
                     # Compute the cornering
-                    curvatories = self.cornerMeasurement.extract_corner(image, corners) 
+                    curvatories = self.cornerMeasurement.extract_corner(image, corners)  
                     curvaturs = self.cornerMeasurement.get_curvatories(curvatories)
+                    
                     curvature_top_left_corner, curvature_top_right_corner, curvature_bottom_left_corner, curvature_bottom_right_corner = curvaturs
  
                     # Draw the measurement

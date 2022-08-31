@@ -515,7 +515,7 @@ class LineUtils(object):
             print('Passed!', err) 
             
              
-        print('Righ max', c_bottom, c_right, right_max)
+        # print('Righ max', c_bottom, c_right, right_max)
         
         # If there is no update assign with the maximum value 
         if c_top == 0:
@@ -544,12 +544,12 @@ class LineUtils(object):
         bottom_center_coordinate = [int(np.average(np.squeeze(bottom)[:, 0])), int(np.average(np.squeeze(bottom)[:, 1]))]  if len(bottom) > 0 else [0, 0]
         right_center_coordinate = [int(np.average(np.squeeze(right)[:, 0])), int(np.average(np.squeeze(right)[:, 1]))] if len(right) > 0 else [0, 0]
         left_center_coordinate = [int(np.average(np.squeeze(left)[:, 0])), int(np.average(np.squeeze(left)[:, 1]))] if len(left) > 0 else [0, 0]
-        
-        print('wow')
-        
+          
         # update central
         new_central = [left_center_coordinate[0] + abs(right_center_coordinate[0] - left_center_coordinate[0]) // 2, top_center_coordinate[1] + abs(bottom_center_coordinate[1] - top_center_coordinate[1]) // 2]
-         
+          
+        # print('top', top_center_coordinate, 'bottom', bottom_center_coordinate, 'right', right_center_coordinate, 'left', left_center_coordinate, 'central', new_central)
+        
         return cnts, top, bottom, right, left, \
             one_top, two_bottom, one_right, two_left, \
             top_center_coordinate, bottom_center_coordinate, right_center_coordinate, left_center_coordinate, \

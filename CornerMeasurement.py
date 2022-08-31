@@ -20,7 +20,7 @@ class CornerMeasurement(object):
     
     # corners = [top_left_corner, top_right_corner, bottom_left_corner, bottom_right_corner]
     def extract_corner(self, image, corners):
-          
+         
         top_left_corner = corners[0]
         top_right_corner = corners[1]
         bottom_left_corner = corners[2]
@@ -30,24 +30,25 @@ class CornerMeasurement(object):
         filter_top_right_corner = image[top_right_corner[1][1]:top_right_corner[2][1], top_right_corner[1][0]:top_right_corner[0][0]]
         filter_bottom_left_corner = image[bottom_left_corner[1][1]:bottom_left_corner[2][1], bottom_left_corner[0][0]:bottom_left_corner[1][0]]
         filter_bottom_right_corner = image[bottom_right_corner[1][1]:bottom_right_corner[2][1], bottom_right_corner[1][0]:bottom_right_corner[0][0]]
-         
+          
         # EDGE FILTERING
         edge_filter_top_left_corner = self.edge_extraction(filter_top_left_corner)
         edge_filter_top_right_corner = self.edge_extraction(filter_top_right_corner)
-        edge_filter_bottom_left_corner = self.edge_extraction(filter_bottom_left_corner)
-        edge_filter_bottom_right_corner = self.edge_extraction(filter_bottom_right_corner)
+        edge_filter_bottom_left_corner = self.edge_extraction(filter_bottom_left_corner) 
+        edge_filter_bottom_right_corner = self.edge_extraction(filter_bottom_right_corner) 
          
         # SELECT ONLY THE CURVE LINE
         curve_filter_top_left_corner = self.get_curve_line(edge_filter_top_left_corner, top=True)
         curve_filter_top_right_corner = self.get_curve_line(edge_filter_top_right_corner, top=True)
         curve_filter_bottom_left_corner = self.get_curve_line(edge_filter_bottom_left_corner, top=False)
         curve_filter_bottom_right_corner = self.get_curve_line(edge_filter_bottom_right_corner, top=False)
+         
         
         # PLOT THE RESULTS
-        # img_curve_curve_top_left_corner = self.plot_filtered_line(edge_filter_top_left_corner, curve_filter_top_left_corner)
-        # img_curve_filter_top_right_corner = self.plot_filtered_line(edge_filter_top_right_corner, curve_filter_top_right_corner)
-        # img_curve_filter_bottom_left_corner = self.plot_filtered_line(edge_filter_bottom_left_corner, curve_filter_bottom_left_corner)
-        # img_curve_filter_bottom_right_corner= self.plot_filtered_line(edge_filter_bottom_right_corner, curve_filter_bottom_right_corner)
+        img_curve_curve_top_left_corner = self.plot_filtered_line(edge_filter_top_left_corner, curve_filter_top_left_corner)
+        img_curve_filter_top_right_corner = self.plot_filtered_line(edge_filter_top_right_corner, curve_filter_top_right_corner)
+        img_curve_filter_bottom_left_corner = self.plot_filtered_line(edge_filter_bottom_left_corner, curve_filter_bottom_left_corner)
+        img_curve_filter_bottom_right_corner= self.plot_filtered_line(edge_filter_bottom_right_corner, curve_filter_bottom_right_corner)
         
         # PLOT ALL THE RESULS
         # data = [
@@ -112,7 +113,7 @@ class CornerMeasurement(object):
         cv2.imwrite(os.path.join(addr_to_save, f'{initial}_results_{name}.jpg'), img)
         
     def edge_extraction(self, corner):
-        return cv2.Canny(corner, 50, 200, None, 3)
+        return cv2.Canny(corner, 50, 100, None, 3)
      
     def get_curve_line(self, extracted_canny, top=True):   
         xx = [] 

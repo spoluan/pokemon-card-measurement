@@ -17,7 +17,9 @@ from RotationUtils import RotationUtils
 from ContourDetectionUtils import ContourDetectionUtils
 from LineUtils import LineUtils
 from CardRemovalUtils import CardRemovalUtils
-from CardDrawUtils import CardDrawUtils
+from CardDrawUtils import CardDrawUtils 
+from Curvature import ComputeCurvature
+import matplotlib.pyplot as plt
 
 def draw(image=None, is_cnt=False, cnts=[], coordinates=[], thickness=5):
     if is_cnt:
@@ -49,7 +51,7 @@ cardDrawUtils = CardDrawUtils()
 
 addr = './Datasets/cards_dec' 
 addr_to_save = './outputs' 
-img_path = 'vmax_043.jpg'
+img_path = 'gx_051.jpg'
 
 image = cv2.imread(os.path.join(addr, img_path), 1)
 rgb = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)

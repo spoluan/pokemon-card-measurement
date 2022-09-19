@@ -124,7 +124,7 @@ class CardMeasurement(object):
         
         # Specify the path to save
         path = os.path.dirname(__file__)
-        addr = os.path.join(path, './Datasets/data-fixed-detected') # ./sources' 
+        addr = os.path.join(path, './Datasets/cards_dec') # ./sources' 
         addr_to_save = os.path.join(path, './outputs')
         results_path = os.path.join(path, './results')
         img_paths = [x for x in os.listdir(addr)[:] if '' in x]   
@@ -152,12 +152,13 @@ class CardMeasurement(object):
 
         # STOP THE PROGRAM AND SERVER WHEN ALL IS FINISHED
         try:
+            print('Connecting to the client ...')
             self.client.connect() 
-            time.sleep(10)
-            self.client.send_stop() 
-            self.client.force_stop() 
-        except:
-            pass 
+            time.sleep(10) 
+            print('Trying to force stop the server ...')
+            self.client.force_stop()
+        except Exception as t:
+            print(t)
     
 if __name__ == '__main__':
     app = CardMeasurement()

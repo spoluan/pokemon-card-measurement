@@ -157,6 +157,7 @@ class CardMeasurement(object):
             time.sleep(10) 
             print('Trying to force stop the server ...')
             self.client.force_stop()
+            self.client.send_stop()
         except Exception as t:
             print(t)
     

@@ -12,20 +12,20 @@ These are the commands you can use to control the program through a socket serve
 - **CURRENT**: to get the current running card status by the card detection app
 - **STOP SERVER**: to fully stop the server and all running processes
 
-## Sample inputs
+<!-- ## Sample inputs
 <p align="center">
 	<img src="Datasets/data-fixed-detected/normal_4.jpg" width="128"/>
 	<img src="Datasets/data-fixed-detected/vcard_2.jpg" width="128"/>
 	<img src="Datasets/data-fixed-detected/vmax_poke_25.jpg" width="128"/>
 	<img src="Datasets/data-fixed-detected/vstar_6.jpg" width="128"/>
 	<img src="Datasets/data-fixed-detected/vmax_48.jpg" width="128"/>
-</p>
+</p> -->
 
-## Sample outputs
-<p align="center">
+<!-- ## Sample outputs -->
+<!-- <p align="center">
 	<img src="sample outputs (better prediction)/normal_4.jpg" width="128"/>
 	<img src="sample outputs (better prediction)/vcard_2.jpg" width="128"/>
 	<img src="sample outputs (better prediction)/vmax_poke_25.jpg" width="128"/>
 	<img src="sample outputs (better prediction)/vstar_6.jpg" width="128"/>
 	<img src="sample outputs (better prediction)/vmax_48.jpg" width="128"/>
-</p>
+</p> -->

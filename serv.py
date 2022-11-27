@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Mar  7 15:20:39 2022
+Created on Wed Jul  6 11:16:39 2022
 
 @author: Sevendi Eldrige Rifki Poluan
 """ 
@@ -10,9 +10,10 @@ import os
 import subprocess       
 import threading # thread6 
 import time 
+import os 
 
-class CardServer(object):
-    
+class CardServer(object): 
+
     def __init__(self):
         
         abs_path = os.path.dirname(__file__)
@@ -24,6 +25,7 @@ class CardServer(object):
         self.port = 20220
         self.is_running = False
         self.is_stop_server = False
+        self.connected_client = []
 
     def read_write_information(self, path, file, write=False):
         status = ''
@@ -61,20 +63,29 @@ class CardServer(object):
             print('Run: ', cmd)
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
             out, err = p.communicate()
-            # output = p.stdout.readline() 
+            output = p.stdout.readline()  
         except Exception as a:
             print('ISSUES (START APP):', a)
+            os._exit(0)
+
+        print('START APP FINISH')
              
     def recv_data(self, c, addr, s):  
          
         while True:  
             
-            print('Now is listening command from', addr)
+            if self.is_stop_server:
+                s.close()
+                break
+
+            print('Now is listening command from', addr, self.is_stop_server)
+
             recv = ''
             try:
                 recv = c.recv(1024).decode()
             except Exception as a:
                 print('ISSUES:', a)
+                self.is_stop_server = True 
                 
             if recv != '': 
                 
@@ -90,14 +101,18 @@ class CardServer(object):
                     else:
                         print('Send response: APP IS RUNNING')
                         c.send('APP IS RUNNING'.encode()) 
-                    print('DONE')
+                    print('DONE RUN')
                     
                 elif recv.strip() == 'FORCE STOP':
                     print('>> FORCE STOP ...')
                     if self.write_information(self.results_path, 'running_status.txt', contents='FORCE STOP') == 'DONE':
                         c.send('DONE FORCE STOP'.encode()) 
+
                     print('DONE')
                     self.is_running = False
+                    self.is_stop_server = True 
+
+                    s.close()
                     
                 elif recv.strip() == 'RESULTS':
                     print('>> RESULTS ...')
@@ -121,6 +136,10 @@ class CardServer(object):
                     else:
                         c.send(b'STOP')
                         print('DONE')
+
+                elif recv.strip() == 'SEND_STOP':
+                    for x in self.connected_client:
+                        x.send(b'STOP')
                     
                 elif recv.strip() == 'STOP SERVER': 
                     print('>> STOP SERVER ...') 
@@ -139,11 +158,39 @@ class CardServer(object):
                     print('>> UNKNOWN COMMAND ...') 
                 
                 time.sleep(1)
-            
+
+                print('DONE ALL')
             else:  
                 break  
             
         print('Thread finish!')  
+
+    def real_time_notification(self, c, addr, s):
+        current_temp = ''
+        final_card = ''
+        counter = 0 
+        while True: 
+
+            current = self.read_write_information(self.results_path, 'current_process.txt', write=False) 
+         
+            if current != current_temp.strip():
+                current_temp = current 
+                try:
+                    s = list(map(lambda x: int(x), current.split('>')[1].split("from")))
+                    print(s)
+                    if(s[0] == s[1]):
+                        final_card = current.split('>')[0]
+                        print('FINAL CARD', final_card)
+                    counter += 1
+                except:
+                    print('Error')
+                if len(current.strip()) > 0:
+                    c.send(f'CURRENT + {current}' . encode()) 
+
+            results = self.read_write_information(self.results_path, 'results.txt', write=True)  
+            if len(results.strip()) > 0:  
+                c.send(f'RESULT + {results}' . encode())
+              
         
     def start_server(self):
       
@@ -161,19 +208,27 @@ class CardServer(object):
             try:
                 c, addr = s.accept() # Command: RUN, FORCE STOP, RESULTS, CURRENT   
                 print ('GOT A NEW CONNECTION FROM:', addr)
+
+                self.connected_client.append(c)
                 
                 # Create thread for data receiving
-                th = threading.Thread(target=self.recv_data, args=(c, addr, s, )).start()  
+                threading.Thread(target=self.recv_data, args=(c, addr, s, )).start()  
+
+                threading.Thread(target=self.real_time_notification, args=(c, addr, s, )).start()  
+ 
             except:
                 print('Server is forced stop by the client!')
             
+            print('SERVER STATUS', self.is_stop_server)
             if not self.is_stop_server: 
                 print('Continue')
                 continue  
             else:
-                c.close()
+                s.close()
                 print('Server closed')
                 break 
+
+        print('DONE SERVER')
 
 if __name__ == '__main__':
     app = CardServer()
